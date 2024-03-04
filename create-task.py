@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.webdriver import Keys
+from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
@@ -26,7 +26,9 @@ def get_to_search_bar_to_search(driver, timeout=5):
         wait = WebDriverWait(driver, timeout)
         popup = wait.until(EC.presence_of_element_located(popup_locater))
 
-        driver.send_keys(Keys.ESCAPE)
+        ActionChains(driver)\
+            .send_keys(Keys.ESCAPE)\
+            .perform()
 
         # check if popup is still there
        # popup = driver.find_element(popup_locater)
