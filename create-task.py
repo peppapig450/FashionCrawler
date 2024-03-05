@@ -49,6 +49,8 @@ def dismiss_login_popup(driver, timeout=5):
         print("Login popup did not appear within the timeout.")
 
 
+# rewrite this to use the click or argparse package
+# --search, -s flag | --json, -j flag, --csv, -c flag, --output, -o flag for file output
 def get_search_query():
     if len(sys.argv) > 1:
         search_query = sys.argv[1]
@@ -68,7 +70,6 @@ def accept_cookies(driver):
         print("Timeout occured")
 
 
-# maybe rewrite the search bar logic
 def get_to_search_bar_to_search(driver, timeout=5):
     try:
         accept_cookies(driver)
@@ -95,6 +96,7 @@ def get_to_search_bar_to_search(driver, timeout=5):
         driver.quit()
 
 
+# optimize this ?
 def type_search(search):
     search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
     submit_button = driver.find_element(By.CSS_SELECTOR, "button[title='Submit']")
