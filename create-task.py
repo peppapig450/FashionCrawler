@@ -66,6 +66,7 @@ def accept_cookies(driver):
         print("Timeout occured")
 
 
+# maybe rewrite the search bar logic
 def get_to_search_bar_to_search(driver, timeout=5):
 
     try:
@@ -94,6 +95,7 @@ def type_search(search):
     ).perform()
 
 
+# beautiful soup code
 if __name__ == "__main__":
     options = Options()
     # windows specific options
