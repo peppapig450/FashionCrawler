@@ -71,11 +71,10 @@ def get_to_search_bar_to_search(driver, timeout=5):
     try:
         accept_cookies(driver)
 
-        # driver.execute_script("document.querySelector('.ReactModal__Overlay').style.display = 'none';")
-        #  ActionChains(driver).send_keys(Keys.ESCAPE).perform()
-
         search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
         search_bar.click()
+
+        dismiss_login_popup(driver)
 
     # check if popup is still there
     except (NoSuchElementException, StaleElementReferenceException) as e:
@@ -88,7 +87,11 @@ def get_to_search_bar_to_search(driver, timeout=5):
 
 def type_search(search):
     search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
-    ActionChains(driver).send_keys_to_element(search_bar, search).perform()
+    submit_button = driver.find_element(By.CSS_SELECTOR, "button[title='Submit']")
+
+    ActionChains(driver).click(search_bar).send_keys(search).click(
+        submit_button
+    ).perform()
 
 
 if __name__ == "__main__":
@@ -108,3 +111,4 @@ if __name__ == "__main__":
     driver.get(base_url)
     get_to_search_bar_to_search(driver)
     search_query = get_search_query()
+    type_search(search_query)
