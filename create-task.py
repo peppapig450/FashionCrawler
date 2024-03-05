@@ -1,39 +1,45 @@
+import sys
+
 from selenium import webdriver
-from selenium.webdriver import Keys, ActionChains
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.actions.action_builder import ActionBuilder
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
+    ElementClickInterceptedException,
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
-    ElementClickInterceptedException,
 )
+from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.by import By
-
-import sys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def dismiss_login_popup(driver, timeout=5):
     try:
         login_popup = WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "ReactModal__Overlay ReactModal__Overlay--after-open modal-overlay"))
+            EC.presence_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader",
+                )
+            )
         )
 
-       # ActionChains(driver).move_to_element(login_popup).move_by_offset(0, 300).click().perform()
-        script = """
-        var elementToRemove = document.querySelector('.ReactModalPortal');
-        elementToRemove && elementToRemove.remove();
-        """
-        driver.execute_script(script)
+        ActionChains(driver).move_to_element(login_popup).pause(1).move_by_offset(
+            250, 0
+        ).pause(1).click()
 
         WebDriverWait(driver, timeout).until_not(
-            EC.presence_of_element_located((By.CLASS_NAME, "ReactModal__Overlay.ReactModal__Overlay--after-open.modal-overlay"))
+            EC.presence_of_element_located(
+                (
+                    By.CLASS_NAME,
+                    "ReactModal__Overlay.ReactModal__Overlay--after-open.modal-overlay",
+                )
+            )
         )
-
 
     except TimeoutException:
         print("Login popup did not appear within the timeout.")
@@ -61,8 +67,6 @@ def accept_cookies(driver):
 def get_to_search_bar_to_search(driver, timeout=5):
 
     try:
-        wait = WebDriverWait(driver, timeout)
-
         accept_cookies(driver)
 
         # driver.execute_script("document.querySelector('.ReactModal__Overlay').style.display = 'none';")
