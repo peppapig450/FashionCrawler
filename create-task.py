@@ -91,6 +91,11 @@ def type_search(search):
 
 if __name__ == "__main__":
     options = Options()
+    # windows specific options
+    if sys.platform.startswith("win"):
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--disable-gpu")
+
     options.add_experimental_option("detach", True)
 
     driver = webdriver.Chrome(
