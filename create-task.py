@@ -28,6 +28,8 @@ def dismiss_login_popup(driver, timeout=5):
             )
         )
 
+        # maybe add if statements here
+
         ActionChains(driver).move_to_element(login_popup).pause(1).move_by_offset(
             250, 0
         ).pause(1).click()
@@ -68,21 +70,28 @@ def accept_cookies(driver):
 
 # maybe rewrite the search bar logic
 def get_to_search_bar_to_search(driver, timeout=5):
-
     try:
         accept_cookies(driver)
 
-        search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
+        search_bar = WebDriverWait(driver, timeout).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "#header_search-input"))
+        )
         search_bar.click()
 
-        dismiss_login_popup(driver)
+        for _ in range(3):
+            try:
+                dismiss_login_popup(driver, timeout=3)
+                break
+            except TimeoutException:
+                pass
 
     # check if popup is still there
-    except (NoSuchElementException, StaleElementReferenceException) as e:
-        print(f"Error interacting with element: {e}")
-        driver.quit()
-    except TimeoutException:
-        print("Element not found within timeout!")
+    except (
+        NoSuchElementException,
+        StaleElementReferenceException,
+        TimeoutException,
+    ) as e:
+        print(f"Error interacting with search bar: {e}")
         driver.quit()
 
 
@@ -96,6 +105,8 @@ def type_search(search):
 
 
 # beautiful soup code
+
+
 if __name__ == "__main__":
     options = Options()
     # windows specific options
