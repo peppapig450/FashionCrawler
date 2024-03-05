@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import argparse
+import sys
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -31,7 +31,7 @@ def dismiss_login_popup(driver, timeout=5):
             )
         )
 
-        # maybe add if statements here
+        # TODO maybe add if statements here
 
         ActionChains(driver).move_to_element(login_popup).pause(1).move_by_offset(
             250, 0
@@ -52,13 +52,10 @@ def dismiss_login_popup(driver, timeout=5):
         print("Login popup did not appear within the timeout.")
 
 
-# rewrite this to use the click or argparse package
+# rewrite this to use the click or argparse package -> DONE
 # --search, -s flag | --json, -j flag, --csv, -c flag, --output, -o flag for file output
 def get_search_query():
-    if len(sys.argv) > 1:
-        search_query = sys.argv[1]
-    else:
-        search_query = input("Enter your search query: ")
+    search_query = input("Enter your search query: ")
 
     return search_query
 
@@ -127,7 +124,7 @@ def get_to_search_bar_to_search(driver, timeout=5):
 
 
 # optimize this ?
-def type_search(search):
+def type_search(driver, search):
     search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
     submit_button = driver.find_element(By.CSS_SELECTOR, "button[title='Submit']")
 
@@ -136,24 +133,40 @@ def type_search(search):
     ).perform()
 
 
-# beautiful soup code
+# TODO beautiful soup code
 
 
-if __name__ == "__main__":
+def main():
+    args = parse_args()
+    search_query = args.search()
+
     options = Options()
-    # windows specific options
+
     if sys.platform.startswith("win"):
         options.add_argument("--ignore-certificate-errors")
         options.add_argument("--disable-gpu")
+
+    if args.headless:
+        options.add_argument("--headless")
 
     options.add_experimental_option("detach", True)
 
     driver = webdriver.Chrome(
         options=options, service=ChromeService(ChromeDriverManager().install())
     )
+
     base_url = "https://www.grailed.com"
 
     driver.get(base_url)
     get_to_search_bar_to_search(driver)
-    search_query = get_search_query()
-    type_search(search_query)
+
+    # Use search query if provided otherwise ask for input
+    if args.search:
+        type_search(driver, args.search)
+    else:
+        search_query = get_search_query()
+        type_search(driver, search_query)
+
+
+if __name__ == "__main__":
+    main()
