@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import sys
+import argparse
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -58,6 +61,33 @@ def get_search_query():
         search_query = input("Enter your search query: ")
 
     return search_query
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Grailed scraper for Final Create Task"
+    )
+
+    search_group = parser.add_argument_group("Search options")
+    output_group = parser.add_argument_group("Output options")
+    driver_group = parser.add_argument_group("Driver options")
+
+    search_group.add_argument(
+        "-s", "--search", help="Search query to scrape for", type=str
+    )
+    output_group.add_argument(
+        "-j", "--json", help="Output as JSON", action="store_true"
+    )
+    output_group.add_argument("-c", "--csv", help="Output as CSV", action="store_true")
+    output_group.add_argument(
+        "-y", "--yaml", help="Output as YAML", action="store_true"
+    )
+    output_group.add_argument("-o", "--output", help="Output file name", type=str)
+    driver_group.add_argument(
+        "--headless", help="Run ChromeDriver in headless mode", action="store_true"
+    )
+
+    return parser.parse_args()
 
 
 def accept_cookies(driver):
