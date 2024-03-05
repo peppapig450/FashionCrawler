@@ -32,7 +32,9 @@ def dismiss_login_popup(driver, timeout=5):
             250, 0
         ).pause(1).click()
 
-        WebDriverWait(driver, timeout).until_not(
+        ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+
+        WebDriverWait(driver, 15).until_not(
             EC.presence_of_element_located(
                 (
                     By.CLASS_NAME,
@@ -46,7 +48,7 @@ def dismiss_login_popup(driver, timeout=5):
 
 
 def get_search_query():
-    if len(sys.argv > 1):
+    if len(sys.argv) > 1:
         search_query = sys.argv[1]
     else:
         search_query = input("Enter your search query: ")
