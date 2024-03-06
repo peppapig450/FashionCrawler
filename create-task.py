@@ -89,7 +89,7 @@ def parse_args():
 
 def accept_cookies(driver):
     try:
-        cookies_button = WebDriverWait(driver, 10).until(
+        cookies_button = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
         )
         ActionChains(driver).double_click(cookies_button).perform()
@@ -108,7 +108,7 @@ def get_to_search_bar_to_search(driver, timeout=5):
 
         for _ in range(3):
             try:
-                dismiss_login_popup(driver, timeout=3)
+                dismiss_login_popup(driver, timeout=2)
                 break
             except TimeoutException:
                 pass
@@ -133,12 +133,12 @@ def type_search(driver, search):
     ).perform()
 
 
-# TODO beautiful soup code
+# TODO beautiful soup code (use lxml)
 
 
 def main():
     args = parse_args()
-    search_query = args.search()
+    search_query = args.search
 
     options = Options()
 
@@ -161,8 +161,8 @@ def main():
     get_to_search_bar_to_search(driver)
 
     # Use search query if provided otherwise ask for input
-    if args.search:
-        type_search(driver, args.search)
+    if search_query:
+        type_search(driver, search_query)
     else:
         search_query = get_search_query()
         type_search(driver, search_query)
