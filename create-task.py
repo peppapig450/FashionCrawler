@@ -149,7 +149,6 @@ def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
         print(f"Timeout occurred while waiting for class count to exceed {min_count}.")
 
 
-# TODO beautiful soup code (use lxml)
 def get_item_post_times(soup):
     return list(
         map(
@@ -195,8 +194,6 @@ def get_item_prices(soup):
 
 def main():
     args = parse_args()
-    search_query = args.search
-
     options = Options()
 
     if sys.platform.startswith("win"):
@@ -218,8 +215,8 @@ def main():
     get_to_search_bar_to_search(driver)
 
     # Use search query if provided otherwise ask for input
-    if search_query:
-        type_search(driver, search_query)
+    if args.search:
+        type_search(driver, args.search)
     else:
         search_query = get_search_query()
         type_search(driver, search_query)
