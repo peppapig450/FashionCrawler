@@ -167,7 +167,7 @@ def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
         print(f"Timeout occurred while waiting for class count to exceed {min_count}.")
 
 
-def get_item_post_times(soup):
+def extract_item_post_times(soup):
     return list(
         map(
             lambda time: time.text.split("\xa0ago")[0],
@@ -176,7 +176,7 @@ def get_item_post_times(soup):
     )
 
 
-def get_item_titles(soup):
+def extract_item_titles(soup):
     return list(
         map(
             lambda title: title.text,
@@ -185,7 +185,7 @@ def get_item_titles(soup):
     )
 
 
-def get_item_designers(soup):
+def extract_item_designers(soup):
     return list(
         map(
             lambda designer: designer.text,
@@ -197,7 +197,7 @@ def get_item_designers(soup):
     )
 
 
-def get_item_sizes(soup):
+def extract_item_sizes(soup):
     return list(
         map(
             lambda size: size.text,
@@ -206,7 +206,7 @@ def get_item_sizes(soup):
     )
 
 
-def get_item_prices(soup):
+def extract_item_prices(soup):
     return list(map(lambda price: price.text, select('[data-testid="Current"]', soup)))
 
 
@@ -245,11 +245,11 @@ def main():
     soup = BeautifulSoup(page_source, "lxml", parser=parser)
 
     data_extraction_functions = {
-        "Posted Time": lambda: get_item_post_times(soup),
-        "Title": lambda: get_item_titles(soup),
-        "Designer": lambda: get_item_designers(soup),
-        "Size": lambda: get_item_sizes(soup),
-        "Price": lambda: get_item_prices(soup),
+        "Posted Time": lambda: extract_item_post_times(soup),
+        "Title": lambda: extract_item_titles(soup),
+        "Designer": lambda: extract_item_designers(soup),
+        "Size": lambda: extract_item_sizes(soup),
+        "Price": lambda: extract_item_prices(soup),
     }
 
     df = pd.DataFrame(columns=data_extraction_functions.keys())  # type: ignore
