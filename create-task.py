@@ -229,21 +229,19 @@ def main():
     parser = etree.HTMLParser()
     soup = BeautifulSoup(page_source, "lxml", parser=parser)
 
-    df = pd.DataFrame(
-        columns=[
-            "Posted Time",
-            "Title",
-            "Designer",
-            "Size",
-            "Price",
-        ]
-    )
-    df["Posted Time"] = get_item_post_times(soup)
-    df["Title"] = get_item_titles(soup)
-    df["Designer"] = get_item_designers(soup)
-    df["Size"] = get_item_sizes(soup)
-    df["Price"] = get_item_prices(soup)
+    data_extraction_functions = {
+        "Posted Time": lambda: get_item_post_times(soup),
+        "Title": lambda: get_item_titles(soup),
+        "Designer": lambda: get_item_designers(soup),
+        "Size": lambda: get_item_sizes(soup),
+        "Price": lambda: get_item_prices(soup),
+    }
 
+    df = pd.DataFrame(columns=data_extraction_functions.keys())  # type: ignore
+    for column, func in data_extraction_functions.items():
+        df[column] = func()
+
+    driver.quit()
     print(df)
 
 
