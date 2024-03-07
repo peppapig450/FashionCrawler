@@ -90,7 +90,7 @@ def parse_args():
 
 
 def save_as_json(df, filename):
-    with open(f"{filename}.json", "w") as json_file:
+    with open(f"{filename}.json", "w", encoding="utf-8") as json_file:
         json.dump(df.to_dict(orient="records"), json_file, indent=4)
 
 
@@ -99,7 +99,7 @@ def save_as_csv(df, filename):
 
 
 def save_as_yaml(df, filename):
-    with open(f"{filename}.yaml", "w") as yaml_file:
+    with open(f"{filename}.yaml", "w", encoding="utf-8") as yaml_file:
         yaml.safe_dump(df.to_dict(orient="records"), yaml_file)
 
 
