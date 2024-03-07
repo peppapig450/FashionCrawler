@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import csv
 import json
-from re import L
 import sys
 
 import pandas as pd
@@ -12,7 +10,6 @@ from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
 from selenium.common.exceptions import (
-    ElementClickInterceptedException,
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
@@ -20,7 +17,6 @@ from selenium.common.exceptions import (
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -38,8 +34,6 @@ def dismiss_login_popup(driver, timeout=5):
                 )
             )
         )
-
-        # TODO maybe add if statements here
 
         ActionChains(driver).move_to_element(login_popup).pause(1).move_by_offset(
             250, 0
