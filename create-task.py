@@ -3,6 +3,7 @@
 import argparse
 import csv
 import json
+from re import L
 import sys
 
 import pandas as pd
@@ -92,6 +93,20 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def save_as_json(df, filename):
+    with open(f"{filename}.json", "w") as json_file:
+        json.dump(df.to_dict(orient="records"), json_file, indent=4)
+
+
+def save_as_csv(df, filename):
+    df.to_csv(f"{filename.csv}", index=False)
+
+
+def save_as_yaml(df, filename):
+    with open(f"{filename}.yaml", "w") as yaml_file:
+        yaml.safe_dump(df.to_dict(orient="records"), yaml_file)
 
 
 def accept_cookies(driver):
@@ -242,7 +257,20 @@ def main():
         df[column] = func()
 
     driver.quit()
-    print(df)
+
+    if args.output:
+        output_filename = args.output
+    else:
+        output_filename = "output"
+
+    if args.json:
+        save_as_json(df, output_filename)
+    elif args.csv:
+        save_as_csv(df, output_filename)
+    elif args.yaml:
+        save_as_yaml(df, output_filename)
+    else:
+        print(df)
 
 
 if __name__ == "__main__":
