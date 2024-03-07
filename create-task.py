@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
+import json
 import sys
-import pandas as pd
 
+import pandas as pd
+import yaml
 from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
