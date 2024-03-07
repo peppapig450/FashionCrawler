@@ -2,7 +2,10 @@
 
 import argparse
 import sys
+import pandas as pd
 
+from bs4 import BeautifulSoup
+from lxml import etree
 from selenium import webdriver
 from selenium.common.exceptions import (
     ElementClickInterceptedException,
@@ -17,6 +20,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from soupsieve import select
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -89,7 +93,7 @@ def parse_args():
 
 def accept_cookies(driver):
     try:
-        cookies_button = WebDriverWait(driver, 5).until(
+        cookies_button = WebDriverWait(driver, 2).until(
             EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
         )
         ActionChains(driver).double_click(cookies_button).perform()
@@ -97,7 +101,7 @@ def accept_cookies(driver):
         print("Timeout occured")
 
 
-def get_to_search_bar_to_search(driver, timeout=5):
+def get_to_search_bar_to_search(driver, timeout=2):
     try:
         accept_cookies(driver)
 
@@ -133,7 +137,69 @@ def type_search(driver, search):
     ).perform()
 
 
+def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
+    def class_count_exceeds(driver):
+        elements = driver.find_elements(By.CSS_SELECTOR, f".{class_name}")
+        return len(elements) > min_count
+
+    try:
+        WebDriverWait(driver, timeout).until(class_count_exceeds)
+        print(f"Number of elements matching class '{class_name}' exceeded {min_count}.")
+    except TimeoutException:
+        print(f"Timeout occurred while waiting for class count to exceed {min_count}.")
+
+
 # TODO beautiful soup code (use lxml)
+def get_post_times(soup, dataframe):
+    posted_times = list(
+        map(
+            lambda time: time.text.split("\xa0ago")[0],
+            select(".ListingAge-module__dateAgo___xmM8y", soup),
+        )
+    )
+
+    dataframe["Posted Time"] = posted_times
+    return dataframe
+
+
+def get_title_designer_size(soup, dataframe):
+    metadata_top_element = select(".ListingMetadata-module__metadata___+RWy0", soup)
+
+    designer_names = []
+    sizes = []
+    titles = []
+
+    if metadata_top_element:
+        for child in metadata_top_element:
+            if child.has_attr("ListingMetadata-module__designer___h3Tc+"):
+                designer_names.extend(
+                    map(
+                        lambda designer: designer.text,
+                        select("p.ListingMetadata-module__designer___h3Tc+", soup),
+                    )
+                )
+            elif child.has_attr("ListingMetadata-module__size___e9naE"):
+                sizes.extend(
+                    map(
+                        lambda size: size.text,
+                        select("p.ListingMetadata-module__size___e9naE", soup),
+                    )
+                )
+            elif child.has_attr("ListingMetadata-module__title___Rsj55"):
+                titles.extend(
+                    map(
+                        lambda title: title.text,
+                        select("p.ListingMetadata-module__title___Rsj55", soup),
+                    )
+                )
+    else:
+        print("Top level metadata element not found")
+
+    dataframe["Title"] = titles
+    dataframe["Size"] = sizes
+    dataframe["Designer"] = designer_names
+
+    return dataframe
 
 
 def main():
@@ -166,6 +232,15 @@ def main():
     else:
         search_query = get_search_query()
         type_search(driver, search_query)
+
+    wait_until_class_count_exceeds(driver, "feed-item", 30)
+    page_source = driver.page_source
+    parser = etree.HTMLParser()
+    soup = BeautifulSoup(page_source, "lxml", parser=parser)
+
+    df = pd.DataFrame(columns=["Posted Time", "Title", "Designer", "Size", "Price"])
+    df = get_post_times(soup, df)
+    df = get_title_designer_size(soup, df)
 
 
 if __name__ == "__main__":
