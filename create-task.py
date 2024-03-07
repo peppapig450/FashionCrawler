@@ -150,56 +150,44 @@ def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
 
 
 # TODO beautiful soup code (use lxml)
-def get_post_times(soup, dataframe):
-    posted_times = list(
+def get_item_post_times(soup):
+    return list(
         map(
             lambda time: time.text.split("\xa0ago")[0],
             select(".ListingAge-module__dateAgo___xmM8y", soup),
         )
     )
 
-    dataframe["Posted Time"] = posted_times
-    return dataframe
+
+def get_item_titles(soup):
+    return list(
+        map(
+            lambda title: title.text,
+            select(".ListingMetadata-module__title___Rsj55", soup),
+        )
+    )
 
 
-def get_title_designer_size(soup, dataframe):
-    metadata_top_element = select(".ListingMetadata-module__metadata___+RWy0", soup)
+def get_item_designers(soup):
+    return list(
+        map(
+            lambda designer: designer.text,
+            select(".ListingMetadata-module__designer___h3Tc+", soup),
+        )
+    )
 
-    designer_names = []
-    sizes = []
-    titles = []
 
-    if metadata_top_element:
-        for child in metadata_top_element:
-            if child.has_attr("ListingMetadata-module__designer___h3Tc+"):
-                designer_names.extend(
-                    map(
-                        lambda designer: designer.text,
-                        select("p.ListingMetadata-module__designer___h3Tc+", soup),
-                    )
-                )
-            elif child.has_attr("ListingMetadata-module__size___e9naE"):
-                sizes.extend(
-                    map(
-                        lambda size: size.text,
-                        select("p.ListingMetadata-module__size___e9naE", soup),
-                    )
-                )
-            elif child.has_attr("ListingMetadata-module__title___Rsj55"):
-                titles.extend(
-                    map(
-                        lambda title: title.text,
-                        select("p.ListingMetadata-module__title___Rsj55", soup),
-                    )
-                )
-    else:
-        print("Top level metadata element not found")
+def get_item_sizes(soup):
+    return list(
+        map(
+            lambda size: size.text,
+            select(".ListingMetadata-module__size___e9naE", soup),
+        )
+    )
 
-    dataframe["Title"] = titles
-    dataframe["Size"] = sizes
-    dataframe["Designer"] = designer_names
 
-    return dataframe
+def get_item_prices(soup):
+    return list(map(lambda price: price.text, select('[data-testid="Current"]', soup)))
 
 
 def main():
@@ -238,9 +226,22 @@ def main():
     parser = etree.HTMLParser()
     soup = BeautifulSoup(page_source, "lxml", parser=parser)
 
-    df = pd.DataFrame(columns=["Posted Time", "Title", "Designer", "Size", "Price"])
-    df = get_post_times(soup, df)
-    df = get_title_designer_size(soup, df)
+    df = pd.DataFrame(
+        columns=[
+            "Posted Time",
+            "Title",
+            "Designer",
+            "Size",
+            "Price",
+        ]
+    )
+    df["Posted Time"] = get_item_post_times(soup)
+    df["Title"] = get_item_titles(soup)
+    df["Designer"] = get_item_designers(soup)
+    df["Size"] = get_item_sizes(soup)
+    df["Price"] = get_item_prices(soup)
+
+    print(df)
 
 
 if __name__ == "__main__":
