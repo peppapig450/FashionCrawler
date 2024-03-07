@@ -172,7 +172,10 @@ def get_item_designers(soup):
     return list(
         map(
             lambda designer: designer.text,
-            select(".ListingMetadata-module__designer___h3Tc+", soup),
+            select(
+                "div.ListingMetadata-module__designerAndSize___lbEdw > p:first-child",
+                soup,
+            ),
         )
     )
 
