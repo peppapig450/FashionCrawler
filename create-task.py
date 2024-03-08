@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from email.mime import base
 import json
 import os
 import re
@@ -240,59 +241,58 @@ def extract_item_listing_link(soup):
     )
 
 
-def main():
-    args = parse_args()
+def configure_driver_options(headless):
     options = Options()
 
     if sys.platform.startswith("win"):
         options.add_argument("--ignore-certificate-errors")
         options.add_argument("--disable-gpu")
 
-    if args.headless:
+    if headless:
         options.add_argument("--headless")
 
     options.add_experimental_option("detach", True)
+    return options
 
-    driver = webdriver.Chrome(
+
+def get_chrome_driver(options):
+    return webdriver.Chrome(
         options=options, service=ChromeService(ChromeDriverManager().install())
     )
 
-    base_url = "https://www.grailed.com"
 
+def navigate_to_search_page(driver, base_url):
     driver.get(base_url)
     get_to_search_bar_to_search(driver)
 
-    # Use search query if provided otherwise ask for input
-    if args.search:
-        type_search(driver, args.search)
+
+def search_for_query(driver, search_query):
+    if search_query:
+        type_search(driver, search_query)
     else:
         search_query = get_search_query()
         type_search(driver, search_query)
 
-    wait_until_class_count_exceeds(driver, "feed-item", 30)
+
+def wait_for_page_load(driver, class_name, min_count):
+    wait_until_class_count_exceeds(driver, class_name, min_count)
+
+
+def get_page_soup(driver):
     page_source = driver.page_source
     parser = etree.HTMLParser()
-    soup = BeautifulSoup(page_source, "lxml", parser=parser)
+    return BeautifulSoup(page_source, "lxml", parser=parser)
 
-    data_extraction_functions = {
-        "Posted Time": lambda: extract_item_post_times(soup),
-        "Title": lambda: extract_item_titles(soup),
-        "Designer": lambda: extract_item_designers(soup),
-        "Size": lambda: extract_item_sizes(soup),
-        "Price": lambda: extract_item_prices(soup),
-        "Listing Link": lambda: extract_item_listing_link(soup),
-    }
 
-    df = pd.DataFrame(columns=data_extraction_functions.keys())  # type: ignore
+def extract_data_to_dataframe(soup, data_extraction_functions):
+    df = pd.DataFrame(columns=data_extraction_functions.keys())
     for column, func in data_extraction_functions.items():
         df[column] = func()
 
-    driver.quit()
+    return df
 
-    output_filename = args.output if args.output else "output"
 
-    output_filename = generate_unique_filename(output_filename)
-
+def save_output_to_file(df, output_filename, args):
     if args.json:
         save_as_json(df, output_filename)
     elif args.csv:
@@ -301,6 +301,44 @@ def main():
         save_as_yaml(df, output_filename)
     else:
         print(df)
+
+
+def main():
+    args = parse_args()
+    options = configure_driver_options(args.headless)
+
+    driver = get_chrome_driver(options)
+
+    try:
+        base_url = "https://grailed.com"
+        navigate_to_search_page(driver, base_url)
+
+        search_query = args.search if args.search else get_search_query()
+        search_for_query(driver, search_query)
+
+        wait_for_page_load(driver, "feed-item", min_count=30)
+
+        soup = get_page_soup(driver)
+
+        data_extraction_functions = {
+            "Posted Time": lambda: extract_item_post_times(soup),
+            "Title": lambda: extract_item_titles(soup),
+            "Designer": lambda: extract_item_designers(soup),
+            "Size": lambda: extract_item_sizes(soup),
+            "Price": lambda: extract_item_prices(soup),
+            "Listing Link": lambda: extract_item_listing_link(soup),
+        }
+
+        df = extract_data_to_dataframe(soup, data_extraction_functions)
+
+        output_filename = generate_unique_filename(
+            args.output if args.output else search_query.replace(" ", "_")
+        )
+
+        save_output_to_file(df, output_filename, args)
+
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
