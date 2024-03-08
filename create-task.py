@@ -291,8 +291,7 @@ def main():
 
     output_filename = args.output if args.output else "output"
 
-    if os.path.exists(output_filename):
-        output_filename = generate_unique_filename(output_filename)
+    output_filename = generate_unique_filename(output_filename)
 
     if args.json:
         save_as_json(df, output_filename)
