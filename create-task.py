@@ -2,6 +2,8 @@
 
 import argparse
 import json
+import os
+import re
 import sys
 
 import pandas as pd
@@ -89,13 +91,38 @@ def parse_args():
     return parser.parse_args()
 
 
+def generate_unique_filename(filename):
+    """
+    Generate a unique filename by appending a number to the base filename if it already exists.
+
+    Args:
+    - filename: The original filename to be checked and modified if necessary.
+
+    Returns:
+    - The unique filename.
+    """
+    base_filename, extension = os.path.splitext(filename)
+    match = re.match(r"^(.*)_?(\d+)$", base_filename)
+    if match:
+        base_filename = match.group(1)
+        count = int(match.group(2)) + 1
+        new_filename = f"{base_filename}_{count}{extension}"
+    else:
+        new_filename = f"{base_filename}_1{extension}"
+
+    if os.path.exists(new_filename):
+        return generate_unique_filename(new_filename)
+    else:
+        return new_filename
+
+
 def save_as_json(df, filename):
     with open(f"{filename}.json", "w", encoding="utf-8") as json_file:
         json.dump(df.to_dict(orient="records"), json_file, indent=4)
 
 
 def save_as_csv(df, filename):
-    df.to_csv(f"{filename.csv}", index=False)
+    df.to_csv(f"{filename}.csv", index=False)
 
 
 def save_as_yaml(df, filename):
@@ -204,6 +231,15 @@ def extract_item_prices(soup):
     return list(map(lambda price: price.text, select('[data-testid="Current"]', soup)))
 
 
+def extract_item_listing_link(soup):
+    return list(
+        map(
+            lambda listing_link: "https://grailed.com" + listing_link.get("href"),
+            select("a.listing-item-link", soup),
+        )
+    )
+
+
 def main():
     args = parse_args()
     options = Options()
@@ -244,6 +280,7 @@ def main():
         "Designer": lambda: extract_item_designers(soup),
         "Size": lambda: extract_item_sizes(soup),
         "Price": lambda: extract_item_prices(soup),
+        "Listing Link": lambda: extract_item_listing_link(soup),
     }
 
     df = pd.DataFrame(columns=data_extraction_functions.keys())  # type: ignore
@@ -252,10 +289,10 @@ def main():
 
     driver.quit()
 
-    if args.output:
-        output_filename = args.output
-    else:
-        output_filename = "output"
+    output_filename = args.output if args.output else "output"
+
+    if os.path.exists(output_filename):
+        output_filename = generate_unique_filename(output_filename)
 
     if args.json:
         save_as_json(df, output_filename)
