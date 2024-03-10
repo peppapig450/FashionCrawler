@@ -9,7 +9,7 @@ from data_extraction import (
     get_page_soup,
 )
 from io_utils import generate_unique_filename, parse_args, save_output_to_file
-from scraping import (
+from scraper import (
     configure_driver_options,
     dismiss_login_popup,
     get_chrome_driver,
