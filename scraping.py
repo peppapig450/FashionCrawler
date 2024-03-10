@@ -191,8 +191,7 @@ def configure_driver_options(headless):
     options = Options()
 
     if sys.platform.startswith("win"):
-        options.add_argument("--ignore-certificate-errors")
-        options.add_argument("--disable-gpu")
+        options.add_argument("--log-level=3")
 
     if headless:
         options.add_argument("--headless")
