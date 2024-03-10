@@ -25,19 +25,19 @@ prices, titles, designers, sizes, and more, and save it in their preferred file 
 #### Branches
 ---
 - **main**:
-    - "Contains the working single file approach."
-    - "Stable version with basic functionality implemented."
-    - "Primary development branch for the main functionality."
+    - Contains the working single file approach.
+    - Stable version with basic functionality implemented.
+    - Primary development branch for the main functionality.
 
 - **modulization-to-the-max**:
-    - "Utilizes modularization with 4 files imported into a main.py."
-    - "Experimenting with modular structure for better code organization."
-    - "Focuses on maximizing code modularization for easier maintenance."
+    - Utilizes modularization with 4 files imported into a main.py.
+    - Experimenting with modular structure for better code organization.
+    - Focuses on maximizing code modularization for easier maintenance.
 
 - **v2**:
-    - "Work in progress towards an object-oriented approach."
-    - "Developing a new version with an object-oriented design."
-    - "Objective is to add additional sites to scrape using an object-oriented approach."
+    - Work in progress towards an object-oriented approach.
+    - Developing a new version with an object-oriented design.
+    - Objective is to add additional sites to scrape using an object-oriented approach.
 
 
 #### Future Posibilites
