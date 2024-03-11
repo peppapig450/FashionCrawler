@@ -21,7 +21,6 @@ class BaseScraper:
         options = self.configure_driver_options(headless)
         self.driver = self.get_chrome_driver(options)
 
-    @abstractmethod
     def accept_cookies(self, cookies_id):
         """
         Accepts cookies on the website by locating and clicking the corresponding button.
@@ -97,21 +96,7 @@ class BaseScraper:
         ).perform()
 
     @abstractmethod
-    def dismiss_login_popup(self, timeout=2):
-        """
-        Dismisses the login popup within a specified timeout period.
-
-        Args:
-        - timeout: The maximum time to wait for the login popup.
-
-        Returns:
-        - None
-        """
-        pass
-
-    def get_to_search_bar_to_search(
-        self, search_bar_css_selector, timeout=2, dismiss_login_popup=False
-    ):
+    def get_to_search_bar_to_search(self, search_bar_css_selector, timeout=2):
         """
         Navigate to the search bar and interact with it to initiate a search.
 
@@ -123,29 +108,21 @@ class BaseScraper:
         Returns:
         - None
         """
-        try:
-            self.accept_cookies(self.driver)
+        pass
 
-            search_bar = WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
-            )
-            search_bar.click()
+    def navigate_to_search_page(self, base_url, search_bar_css_selector):
+        """
+        Navigate to the search page of the website.
 
-            if dismiss_login_popup:
-                for _ in range(3):
-                    try:
-                        self.dismiss_login_popup(timeout=2)
-                        break
-                    except TimeoutException:
-                        pass
+        Args:
+        - base_url: The base URL of the website.
+        - search_bar_css_selector: The CSS selector for the search bar.
 
-        except (
-            NoSuchElementException,
-            StaleElementReferenceException,
-            TimeoutException,
-        ) as e:
-            print(f"Error interacting with search bar: {e}")
-            self.driver.quit()
+        Returns:
+        - None
+        """
+        self.driver.get(base_url)
+        self.get_to_search_bar_to_search(search_bar_css_selector)
 
     def wait_until_class_count_exceeds(self, class_name, min_count, timeout=10):
         """
@@ -210,76 +187,16 @@ class BaseScraper:
 
         options.add_experimental_option("detach", True)
         return options
-    
-    @abstractmethod
-    def navigate_
 
+    def wait_for_page_load(self, class_name, min_count):
+        """
+        Wait for the page to load completely.
 
-def dismiss_login_popup(driver, timeout=5):
-    """
-    Dismisses the login popup within a specified timeout period.
+        Args:
+        - class_name: The CSS class name of an element to wait for.
+        - min_count: The minimum number of elements to wait for.
 
-    Args:
-    - driver: The Selenium WebDriver instance.
-    - timeout: The maximum time to wait for the login popup.
-
-    Returns:
-    - None
-    """
-    try:
-        login_popup = WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located(
-                (
-                    By.CSS_SELECTOR,
-                    ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader",
-                )
-            )
-        )
-
-        ActionChains(driver).move_to_element(login_popup).pause(1).move_by_offset(
-            250, 0
-        ).pause(1).click()
-
-        ActionChains(driver).send_keys(Keys.ESCAPE).perform()
-
-        WebDriverWait(driver, 15).until_not(
-            EC.presence_of_element_located(
-                (
-                    By.CLASS_NAME,
-                    "ReactModal__Overlay.ReactModal__Overlay--after-open.modal-overlay",
-                )
-            )
-        )
-
-    except TimeoutException:
-        print("Login popup did not appear within the timeout.")
-
-
-def navigate_to_search_page(driver, base_url):
-    """
-    Navigate to the search page of the website.
-
-    Args:
-    - driver: The Selenium WebDriver instance.
-    - base_url: The base URL of the website.
-
-    Returns:
-    - None
-    """
-    driver.get(base_url)
-    get_to_search_bar_to_search(driver)
-
-
-def wait_for_page_load(driver, class_name, min_count):
-    """
-    Wait for the page to load completely.
-
-    Args:
-    - driver: The Selenium WebDriver instance.
-    - class_name: The CSS class name of an element to wait for.
-    - min_count: The minimum number of elements to wait for.
-
-    Returns:
-    - None
-    """
-    wait_until_class_count_exceeds(driver, class_name, min_count)
+        Returns:
+        - None
+        """
+        self.wait_until_class_count_exceeds(class_name, min_count)
