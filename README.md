@@ -1,48 +1,26 @@
-# Grailed Scraper for AP CSP Final Create Task
+# Web Scraper for Fashion Marketplace Sites
 
-## Description
+A Python tool for scraping multiple shopping websites such as Grailed, Depop, GOAT, and STOCKx (maybe more).
 
-This Python script is designed to scrape product listings from the Grailed marketplace.
-It allows users to search for items based on a keyword and retrieve information such as
-prices, titles, designers, sizes, and more, and save it in their preferred file format.
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
 
-### Requirements
----
-- Python 3.8+
-- Works on macOS, Linux
+## Introduction
 
----
+This project aims to provide a convenient and unified interface for scraping product listings and related data from various online shopping platforms.
+
+This originated from my AP Computer Science Principles project which was just a Grailed scraper, and I wished to expand it to more sites so I created this.
+The original is [here](https://github.com/peppapig450/final-create-task-scraping).
+
+
 ## Project Plan
 
 #### To-Do List
-- [X] Pass search term to program via command line or ~~pop-up~~ input.
-- [X] Beautiful soup to parse the prices.
-- [X] Output in either csv or json.
-- [X] Scrape links to the items and pictures of them.
-- [ ] V2 - finish refactoring into class based object oriented approach for future extension
+
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
-
-
-#### Branches
----
-- **main**:
-    - Contains the working single file approach.
-    - Stable version with basic functionality implemented.
-    - Primary development branch for the main functionality.
-
-- **modulization-to-the-max**:
-    - Utilizes modularization with 4 files imported into a main.py.
-    - Experimenting with modular structure for better code organization.
-    - Focuses on maximizing code modularization for easier maintenance.
-
-- **v2**:
-    - Work in progress towards an object-oriented approach.
-    - Developing a new version with an object-oriented design.
-    - Objective is to add additional sites to scrape using an object-oriented approach.
-
-
-#### Future Posibilites
----
-Beyond the AP test I may develop this into a full scaled project capable of scraping multiple sites.
-This seems like a good way to get better at Python, and Web Scraping/HTML understanding.
