@@ -13,7 +13,7 @@ def parse_args():
     Parse command-line arguments using the argparse module.
     """
     parser = argparse.ArgumentParser(
-        description="Grailed scraper for Final Create Task"
+        description="Web scraper for shopping sites based off my Final Create Task"
     )
 
     search_group = parser.add_argument_group("Search options")
