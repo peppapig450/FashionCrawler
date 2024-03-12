@@ -18,10 +18,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 class BaseScraper:
     def __init__(self, headless):
-        options = self.configure_driver_options(headless)
-        self.driver = self.get_chrome_driver(options)
+        try:
+            options = self.configure_driver_options(headless)
+            self.driver = self.get_chrome_driver(options)
+        except Exception as e:
+            print(f"An error occurred while initializing the ChromeDriver: {e}")
+            raise
 
-    def accept_cookies(self, cookies_id):
+    def accept_cookies(self, cookies_id: str) -> None:
         """
         Accepts cookies on the website by locating and clicking the corresponding button.
 
@@ -40,7 +44,7 @@ class BaseScraper:
             print("Timeout occured while accepting cookies.")
 
     @staticmethod
-    def get_search_query():
+    def get_search_query() -> str:
         """
         Prompt the user to enter a search query.
 
@@ -51,7 +55,10 @@ class BaseScraper:
         return search_query
 
     def search_for_query(
-        self, search_query, search_bar_css_selector, submit_button_css_selector
+        self,
+        search_query: str,
+        search_bar_css_selector: str,
+        submit_button_css_selector: str,
     ):
         """
         Perform a search with the provided query.
@@ -74,7 +81,9 @@ class BaseScraper:
                 search_query, search_bar_css_selector, submit_button_css_selector
             )
 
-    def type_search(self, search, search_bar_css_selector, submit_button_css_selector):
+    def type_search(
+        self, search: str, search_bar_css_selector: str, submit_button_css_selector: str
+    ) -> None:
         """
         Enter the provided search query into the search bar and submit the search.
 
@@ -96,7 +105,9 @@ class BaseScraper:
         ).perform()
 
     @abstractmethod
-    def get_to_search_bar_to_search(self, search_bar_css_selector, timeout=2):
+    def get_to_search_bar_to_search(
+        self, search_bar_css_selector: str, timeout=2
+    ) -> None:
         """
         Navigate to the search bar and interact with it to initiate a search.
 
@@ -110,9 +121,11 @@ class BaseScraper:
         """
         pass
 
-    def navigate_to_search_page(self, base_url, search_bar_css_selector):
+    def navigate_to_search_bar(
+        self, base_url: str, search_bar_css_selector: str
+    ) -> None:
         """
-        Navigate to the search page of the website.
+        Navigate to the search bar of the website.
 
         Args:
         - base_url: The base URL of the website.
@@ -124,7 +137,9 @@ class BaseScraper:
         self.driver.get(base_url)
         self.get_to_search_bar_to_search(search_bar_css_selector)
 
-    def wait_until_class_count_exceeds(self, class_name, min_count, timeout=10):
+    def wait_until_class_count_exceeds(
+        self, class_name: str, min_count: int, timeout=10
+    ) -> None:
         """
         Wait until the number of elements matching the specified class exceeds a minimum count.
 
@@ -188,7 +203,7 @@ class BaseScraper:
         options.add_experimental_option("detach", True)
         return options
 
-    def wait_for_page_load(self, class_name, min_count):
+    def wait_for_page_load(self, class_name: str, min_count: int) -> None:
         """
         Wait for the page to load completely.
 
