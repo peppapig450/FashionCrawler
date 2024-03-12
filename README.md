@@ -21,6 +21,8 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 ## Project Plan
 
-#### To-Do List
+#### To-Do List / Possible Features
 
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
+- [ ] Implement logging
+- [ ] Options to filter the dataframe by a category
