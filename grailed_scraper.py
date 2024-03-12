@@ -13,9 +13,27 @@ from scraper import BaseScraper
 
 class GrailedScraper(BaseScraper):
     LOGIN_POPUP_SELECTOR = ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader"
+    BASE_URL = "https://grailed.com"
+    SEARCH_BAR_CSS_SELECTOR = "#header_search-input"
+    SEARCH_BAR_SUBMIT_CSS_SELECTOR = "button[title='Submit']"
+    ITEM_CLASS_NAME = "feed-item"
+    MIN_COUNT = 30
+    COOKIES_ID = "onetrust-accept-btn-handler"
 
     def __init__(self, headless):
         super().__init__(headless)
+
+    def run_grailed_scraper(self, search_query):
+        self._navigate_and_search(search_query)
+        super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
+
+    def _navigate_and_search(self, search_query):
+        super().navigate_to_search_bar(self.BASE_URL, self.SEARCH_BAR_CSS_SELECTOR)
+        super().search_for_query(
+            search_query,
+            self.SEARCH_BAR_CSS_SELECTOR,
+            self.SEARCH_BAR_SUBMIT_CSS_SELECTOR,
+        )
 
     def get_to_search_bar_to_search(self, search_bar_css_selector, timeout=2):
         """
@@ -29,7 +47,7 @@ class GrailedScraper(BaseScraper):
         - None
         """
         try:
-            self.accept_cookies(self.driver)
+            self.accept_cookies(self.COOKIES_ID)
 
             search_bar = WebDriverWait(self.driver, timeout).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
