@@ -13,3 +13,7 @@ def main():
         # write the parameters for search_for_query in GrailedScraper class
     finally:
         scraper.driver.quit()
+
+
+if __name__ == "__main__":
+    main()
