@@ -46,7 +46,7 @@ class IOUtils:
         # Search options group
         search_group = parser.add_argument_group("Search options")
         search_group.add_argument(
-            "-q", "--query", help="Search query to scrape for", type=str
+            "-s", "--search", help="Search query to scrape for", type=str
         )
 
         # Output options group
