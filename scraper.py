@@ -335,5 +335,5 @@ class GrailedScraper(BaseScraper):
             print("Login popup did not appear within the timeout.")
 
 
-class DepopScraper:
+class DepopScraper(BaseScraper):
     pass

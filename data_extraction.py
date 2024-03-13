@@ -108,3 +108,7 @@ class GrailedDataExtractor(BaseDataExtractor):
                 select("a.listing-item-link", self.soup),
             )
         )
+
+
+class DepopDataExtractor(BaseDataExtractor):
+    pass
