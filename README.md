@@ -32,7 +32,7 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 Install using a virtual environment (recommended)
 
-    ```bash
+```bash
     # clone repository
     git clone https://github.com/peppapig450/FashionCrawler
 
@@ -44,4 +44,4 @@ Install using a virtual environment (recommended)
 
     # install dependencies
     pip install -r requirements.txt
-    ```
+```
