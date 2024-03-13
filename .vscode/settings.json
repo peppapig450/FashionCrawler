@@ -1,5 +1,5 @@
 {
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoImportCompletions": true,
-    "pylint.args": ["--rcfile=/Users/nick/Projects/Programming/School/ap-csp/final-create-task/.pylintrc"]
+    "pylint.args": ["--rcfile=/Users/nick/Projects/Programming/Python/scraping/FashionCrawler/.pylintrc"]
 }
