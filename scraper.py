@@ -336,4 +336,24 @@ class GrailedScraper(BaseScraper):
 
 
 class DepopScraper(BaseScraper):
-    pass
+    COOKIE_CLASS_SELECTOR = "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu"
+
+    def accept_cookies(self, cookies_class: str) -> None:
+        """
+        Accepts cookies on the website by locating and clicking the corresponding button.
+
+        Args:
+        - cookies_id: The ID of the cookies button.
+
+        Returns:
+        - None
+        """
+        try:
+            cookies_button = WebDriverWait(self.driver, 2).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, self.COOKIE_CLASS_SELECTOR)
+                )
+            )
+            ActionChains(self.driver).double_click(cookies_button).perform()
+        except TimeoutException:
+            print("Timeout occured while accepting cookies.")
