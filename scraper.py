@@ -114,7 +114,6 @@ class BaseScraper:
         Args:
         - search_bar_css_selector: The CSS selector for the search bar.
         - timeout: The maximum time to wait for elements to be interactable.
-        - dismiss_login_popup: Whether to dismiss the login popup if present. Defaults to False.
 
         Returns:
         - None
