@@ -6,6 +6,7 @@ from data_extraction import GrailedDataExtractor
 def main():
     config = IOUtils.parse_args()
 
+    # TODO: figure out how we're gonna run each websites scraper
     scraper = GrailedScraper(headless=config["headless"])
 
     try:
