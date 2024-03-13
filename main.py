@@ -1,5 +1,5 @@
 from io_utils import IOUtils
-from grailed_scraper import GrailedScraper
+from scraper import GrailedScraper
 
 
 def main():

@@ -228,7 +228,7 @@ class GrailedScraper(BaseScraper):
     def __init__(self, headless):
         super().__init__(headless)
 
-    def run_grailed_scraper(self, search_query: str) -> None:
+    def run_grailed_scraper(self, search_query) -> None:
         """
         Runs the Grailed scraper to search for items based on the provided search query.
 
