@@ -343,7 +343,7 @@ class DepopScraper(BaseScraper):
         Accepts cookies on the website by locating and clicking the corresponding button.
 
         Args:
-        - cookies_id: The ID of the cookies button.
+        - cookies_class: The Class of the cookies button.
 
         Returns:
         - None
