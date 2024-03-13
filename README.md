@@ -27,3 +27,20 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 - [ ] Implement logging
 - [ ] Options to filter the dataframe by a category
 - [ ] Headless mode doesn't work if it can't be fixed -> maybe try minimized mode?
+
+## Installation
+
+Install the depedencies using a virtual environment
+    ```bash
+    # clone repository
+    git clone https://github.com/peppapig450/fashioncrawler
+
+    # switch to directory
+    cd fashioncrawler
+
+    # setup and activate virtual environment
+    python3 -m venv venv && source venv/bin/activate
+
+    # install dependencies
+    pip install -r requirements.txt
+    ```
