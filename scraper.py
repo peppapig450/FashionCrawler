@@ -25,19 +25,19 @@ class BaseScraper:
             print(f"An error occurred while initializing the ChromeDriver: {e}")
             raise
 
-    def accept_cookies(self, cookies_id: str) -> None:
+    def accept_cookies(self, cookie_css_selector: str) -> None:
         """
         Accepts cookies on the website by locating and clicking the corresponding button.
 
         Args:
-        - cookies_id: The ID of the cookies button.
+        - cookies_css_selector (str): The CSS selector for the cookies button.
 
         Returns:
         - None
         """
         try:
             cookies_button = WebDriverWait(self.driver, 2).until(
-                EC.element_to_be_clickable((By.ID, cookies_id))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, cookie_css_selector))
             )
             ActionChains(self.driver).double_click(cookies_button).perform()
         except TimeoutException:
@@ -217,13 +217,17 @@ class BaseScraper:
 
 
 class GrailedScraper(BaseScraper):
+    # Selectors for various elements
     LOGIN_POPUP_SELECTOR = ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader"
-    BASE_URL = "https://grailed.com"
     SEARCH_BAR_CSS_SELECTOR = "#header_search-input"
     SEARCH_BAR_SUBMIT_CSS_SELECTOR = "button[title='Submit']"
+    COOKIES_CSS_SELECTOR = "#onetrust-accept-btn-handler"
+
+    BASE_URL = "https://grailed.com"
+
+    # Item related constants
     ITEM_CLASS_NAME = "feed-item"
     MIN_COUNT = 30
-    COOKIES_ID = "onetrust-accept-btn-handler"
 
     def __init__(self, headless):
         super().__init__(headless)
@@ -272,7 +276,7 @@ class GrailedScraper(BaseScraper):
         - None
         """
         try:
-            self.accept_cookies(self.COOKIES_ID)
+            self.accept_cookies(self.COOKIES_CSS_SELECTOR)
 
             search_bar = WebDriverWait(self.driver, timeout).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
@@ -336,24 +340,4 @@ class GrailedScraper(BaseScraper):
 
 
 class DepopScraper(BaseScraper):
-    COOKIE_CLASS_SELECTOR = "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu"
-
-    def accept_cookies(self, cookies_class: str) -> None:
-        """
-        Accepts cookies on the website by locating and clicking the corresponding button.
-
-        Args:
-        - cookies_class: The Class of the cookies button.
-
-        Returns:
-        - None
-        """
-        try:
-            cookies_button = WebDriverWait(self.driver, 2).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, self.COOKIE_CLASS_SELECTOR)
-                )
-            )
-            ActionChains(self.driver).double_click(cookies_button).perform()
-        except TimeoutException:
-            print("Timeout occured while accepting cookies.")
+    COOKIE_CSS_SELECTOR = "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu"
