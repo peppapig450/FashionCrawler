@@ -106,7 +106,7 @@ class GrailedScraper(BaseScraper):
                 EC.presence_of_element_located(
                     (
                         By.CSS_SELECTOR,
-                        ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader",
+                        self.LOGIN_POPUP_SELECTOR,
                     )
                 )
             )
@@ -120,8 +120,8 @@ class GrailedScraper(BaseScraper):
             WebDriverWait(self.driver, 10).until_not(
                 EC.presence_of_element_located(
                     (
-                        By.CLASS_NAME,
-                        "ReactModal__Overlay.ReactModal__Overlay--after-open.modal-overlay",
+                        By.CSS_SELECTOR,
+                        self.LOGIN_POPUP_SELECTOR,
                     )
                 )
             )
