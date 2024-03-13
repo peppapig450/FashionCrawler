@@ -40,6 +40,9 @@ class GrailedDataExtractor(BaseDataExtractor):
         "Listing Link": lambda self: self.extract_item_listing_link(self),
     }
 
+    def extract_data_to_function(self):
+        return super().extract_data_to_function(self.data_extraction_functions)
+
     def extract_item_post_times(self):
         return list(
             map(
