@@ -59,7 +59,7 @@ class BaseScraper:
         search_query: str,
         search_bar_css_selector: str,
         submit_button_css_selector: str,
-    ):
+    ) -> None:
         """
         Perform a search with the provided query.
 
