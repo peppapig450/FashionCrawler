@@ -26,3 +26,4 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
 - [ ] Implement logging
 - [ ] Options to filter the dataframe by a category
+- [ ] Headless mode doesn't work if it can't be fixed -> maybe try minimized mode?
