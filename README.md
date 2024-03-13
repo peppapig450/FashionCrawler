@@ -30,10 +30,11 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 ## Installation
 
-Install the depedencies using a virtual environment
+Install using a virtual environment (recommended)
+
     ```bash
     # clone repository
-    git clone https://github.com/peppapig450/fashioncrawler
+    git clone https://github.com/peppapig450/FashionCrawler
 
     # switch to directory
     cd fashioncrawler
