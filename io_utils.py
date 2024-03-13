@@ -200,11 +200,7 @@ class IOUtils:
         Returns:
             None
         """
-        output_filename = IOUtils._generate_unique_filename(
-            config.get("search_query", "output")
-            if not output_filename
-            else output_filename
-        )
+        output_filename = IOUtils._generate_unique_filename(output_filename)
 
         output_format = config["output_format"]
         if output_format == "json":
@@ -271,7 +267,7 @@ class IOUtils:
         Returns:
         - The unique filename.
         """
-        base_filename, extension = os.path.splitext(filename)
+        base_filename, extension = os.path.splitext((filename.replace(" ", "_")))
         match = re.match(r"^(.*)_?(\d+)$", base_filename)
         if match:
             base_filename = match.group(1)
