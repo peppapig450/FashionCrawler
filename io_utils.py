@@ -73,7 +73,7 @@ class IOUtils:
         args = parser.parse_args()
 
         # Load configuration from YAML file
-        config = IOUtils._load_config("config.yaml")
+        config = IOUtils._load_config("config/config.yaml")
 
         # update config based on command line args
         if args.enable_site:
