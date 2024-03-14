@@ -1,0 +1,11 @@
+output_format = "json"
+
+sites:
+  - name: grailed
+    enabled: true
+  - name: depop
+    enabled: false
+  - name: stockx
+    enabled: false
+  - name: goat
+    enabled: false
