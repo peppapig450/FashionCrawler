@@ -215,6 +215,16 @@ class BaseScraper:
         """
         self.wait_until_class_count_exceeds(class_name, min_count)
 
+    @abstractmethod
+    def run_scraper(self, search_query):
+        """
+        Abstract method to run the scraper for a given search query.
+
+        Args:
+            search_query (str): The search query to be used for scraping.
+        """
+        pass
+
 
 class GrailedScraper(BaseScraper):
     # Selectors for various elements
@@ -229,10 +239,11 @@ class GrailedScraper(BaseScraper):
     ITEM_CLASS_NAME = "feed-item"
     MIN_COUNT = 30
 
+    # TODO: what if on init we pass the search query and neccessary things to each class and run the scrapers like that
     def __init__(self, headless):
         super().__init__(headless)
 
-    def run_grailed_scraper(self, search_query) -> None:
+    def run_scraper(self, search_query) -> None:
         """
         Runs the Grailed scraper to search for items based on the provided search query.
 
@@ -354,7 +365,7 @@ class DepopScraper(BaseScraper):
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
 
-    def run_depop_scraper(self, search_query) -> None:
+    def run_scraper(self, search_query) -> None:
         """
         Runs the Depop scraper to search for items based on the provided search query.
 
