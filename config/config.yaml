@@ -1,5 +1,5 @@
-output_format = "json"
-output_directory = "output"
+output_format: "json"
+output_directory: "output"
 
 sites:
   - name: grailed
