@@ -35,7 +35,7 @@ def main():
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
     gscraper = GrailedScraper(headless=config["headless"])
-    # also i think that initializing the scraper before spawns the empty window
+    # also i think that initializing the scraper before running the code for it spawns the empty window
     dscraper = DepopScraper(headless=config["headless"])
 
     try:
