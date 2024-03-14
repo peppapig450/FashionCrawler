@@ -32,7 +32,10 @@ def main():
     search_query = config.get("search_query", "")
 
     # TODO: figure out how we're gonna run each websites scraper
+    # create a dictionary ? list
+    # or pass config with the enabled sites to run_scraper or another method and handle from there.
     gscraper = GrailedScraper(headless=config["headless"])
+    # also i think that initializing the scraper before spawns the empty window
     dscraper = DepopScraper(headless=config["headless"])
 
     try:
