@@ -64,6 +64,8 @@ class IOUtils:
             "-o", "--output", help="Ouput file name (without extension)", type=str
         )
 
+        output_group.add_argument("--output-dir", help="Output directory", type=str)
+
         # Driver options group
         driver_group = parser.add_argument_group("Driver options")
         driver_group.add_argument(
@@ -187,6 +189,9 @@ class IOUtils:
         config["output_format"] = IOUtils._get_output_format(args)
         config["headless"] = args.headless
 
+        if args.output_dir:
+            config["output_directory"] = args.output_dir
+
     @staticmethod
     def save_output_to_file(df, output_filename, config):
         """
@@ -202,7 +207,13 @@ class IOUtils:
         """
         output_filename = IOUtils._generate_unique_filename(output_filename)
 
+        output_directory = config.get("output_directory", "")
+
+        if output_directory:
+            output_filename = os.path.join(output_directory, output_filename)
+
         output_format = config["output_format"]
+
         if output_format == "json":
             IOUtils._save_as_json(df, output_filename)
         elif output_format == "csv":
