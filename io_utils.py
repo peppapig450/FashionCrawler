@@ -210,6 +210,7 @@ class IOUtils:
         output_directory = config.get("output_directory", "")
 
         if output_directory:
+            os.makedirs(output_directory, exist_ok=True)
             output_filename = os.path.join(output_directory, output_filename)
 
         output_format = config["output_format"]
