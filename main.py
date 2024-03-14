@@ -1,4 +1,3 @@
-from re import search
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper
 from data_extraction import GrailedDataExtractor
