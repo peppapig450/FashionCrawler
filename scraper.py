@@ -340,4 +340,103 @@ class GrailedScraper(BaseScraper):
 
 
 class DepopScraper(BaseScraper):
+    # Element selectors
     COOKIE_CSS_SELECTOR = "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu"
+    SEARCH_ICON_SELECTOR = "button.ButtonMinimal-sc-6a6e37b5-0.SearchBar-styles__SearchButton-sc-ac2d78a2-8.gFYYaH.dUAcFR"
+    SEARCH_BAR_SELECTOR = "#searchBar__input"
+    SUBMIT_BUTTON_SELECTOR = (
+        "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.knZqMC"
+    )
+
+    BASE_URL = "https://depop.com"
+
+    # Item related constants for page loading
+    ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
+    MIN_COUNT = 30
+
+    def run_depop_scraper(self, search_query) -> None:
+        """
+        Runs the Depop scraper to search for items based on the provided search query.
+
+        Args:
+        - search_query (str): The search query to be used for searching items.
+
+        Returns:
+        - None
+        """
+        self._navigate_and_search(search_query)
+        super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
+
+    def get_to_search_bar_to_search(
+        self,
+        search_icon_css_selector: str,
+        timeout=2,
+    ) -> None:
+        """
+        Navigate to the search bar and interact with it to initiate a search.
+
+        Args:
+        - search_icon_css_seelctor: The magnifying glass you must click to get to search bar on depop.
+        - search_bar_css_selector: The CSS selector for the search bar.
+        - timeout: The maximum time to wait for elements to be interactable.
+
+        Returns:
+        - None
+        """
+        try:
+            self.accept_cookies(self.COOKIE_CSS_SELECTOR)
+
+            search_icon = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, search_icon_css_selector))
+            )
+            search_icon.click()
+
+        except (
+            NoSuchElementException,
+            StaleElementReferenceException,
+            TimeoutException,
+        ) as e:
+            print(f"Error interacting with search bar: {e}")
+            self.driver.quit()
+
+    def type_search(
+        self, search: str, search_bar_css_selector: str, submit_button_css_selector: str
+    ) -> None:
+        """
+        Enter the provided search query into the search bar and submit the search.
+
+        Args:
+        - search: The search query to be entered into the search bar.
+        - search_bar_css_selector: The CSS selector for the search bar.
+        - submit_button_css_selector: The CSS selector for the submit button.
+
+        Returns:
+        - None
+        """
+        search_bar = self.driver.find_element(By.CSS_SELECTOR, search_bar_css_selector)
+
+        ActionChains(self.driver).click(search_bar).send_keys(search).click(
+            search_bar
+        ).perform()
+
+        submit_button = WebDriverWait(self.driver, 2).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, submit_button_css_selector))
+        )
+        submit_button.click()
+
+    def _navigate_and_search(self, search_query: str) -> None:
+        """
+        Navigates to the search bar and performs a search based on the provided query.
+
+        Args:
+        - search_query (str): The search query to be used for searching items.
+
+        Returns:
+        - None
+        """
+        super().navigate_to_search_bar(self.BASE_URL, self.SEARCH_BAR_SELECTOR)
+        super().search_for_query(
+            search_query,
+            self.SEARCH_BAR_SELECTOR,
+            self.SUBMIT_BUTTON_SELECTOR,
+        )
