@@ -112,3 +112,7 @@ class GrailedDataExtractor(BaseDataExtractor):
 
 class DepopDataExtractor(BaseDataExtractor):
     pass
+
+
+# href="/products/rianncamp-size-extra-large-could-fit
+# for the depop product titles extract it from the href
