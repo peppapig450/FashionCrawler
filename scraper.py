@@ -73,7 +73,9 @@ class BaseScraper:
         """
         if search_query:
             self.type_search(
-                search_query, search_bar_css_selector, submit_button_css_selector
+                search_query,
+                search_bar_css_selector,
+                submit_button_css_selector,
             )
         else:
             search_query = self.get_search_query()
@@ -352,6 +354,9 @@ class DepopScraper(BaseScraper):
     SUBMIT_BUTTON_SELECTOR = (
         "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.gOIiyI"
     )
+    BACKUP_SUBMIT_BUTTON_SELECTOR = (
+        "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.knZqMC"
+    )
 
     BASE_URL = "https://depop.com"
 
@@ -405,7 +410,10 @@ class DepopScraper(BaseScraper):
             self.driver.quit()
 
     def type_search(
-        self, search: str, search_bar_css_selector: str, submit_button_css_selector: str
+        self,
+        search: str,
+        search_bar_css_selector: str,
+        submit_button_css_selector: str,
     ) -> None:
         """
         Enter the provided search query into the search bar and submit the search.
@@ -424,9 +432,27 @@ class DepopScraper(BaseScraper):
             search_bar
         ).perform()
 
-        submit_button = WebDriverWait(self.driver, 2).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, submit_button_css_selector))
-        )
+        # depop has 2 different possible search submit buttons depending on screen size
+        # we check for both here and we use access the variable for the backup from self so that we can
+        # still call the search_for_query from super
+        try:
+            submit_button = WebDriverWait(self.driver, 2).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, submit_button_css_selector)
+                )
+            )
+        except TimeoutException:
+            try:
+                submit_button = WebDriverWait(self.driver, 2).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, self.BACKUP_SUBMIT_BUTTON_SELECTOR)
+                    )
+                )
+            except TimeoutException:
+                pass
+                # raise NoSuchElementException("Both primary and backup submit button selectors not found")
+                # TODO: add proper logging later
+
         submit_button.click()
 
     def _navigate_and_search(self, search_query: str) -> None:
