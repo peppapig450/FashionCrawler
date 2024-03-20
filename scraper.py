@@ -350,7 +350,7 @@ class DepopScraper(BaseScraper):
     SEARCH_ICON_SELECTOR = "button.ButtonMinimal-sc-6a6e37b5-0.SearchBar-styles__SearchButton-sc-ac2d78a2-8.gFYYaH.dUAcFR"
     SEARCH_BAR_SELECTOR = "#searchBar__input"
     SUBMIT_BUTTON_SELECTOR = (
-        "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.knZqMC"
+        "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.gOIiyI"
     )
 
     BASE_URL = "https://depop.com"
