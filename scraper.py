@@ -17,9 +17,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class BaseScraper:
-    def __init__(self, headless):
+    def __init__(self):
         try:
-            options = self.configure_driver_options(headless)
+            options = self.configure_driver_options()
             self.driver = self.get_chrome_driver(options)
         except Exception as e:
             print(f"An error occurred while initializing the ChromeDriver: {e}")
@@ -181,12 +181,9 @@ class BaseScraper:
         )
 
     @staticmethod
-    def configure_driver_options(headless):
+    def configure_driver_options():
         """
         Configure the options for the Chrome WebDriver.
-
-        Args:
-        - headless: Boolean value indicating whether to run Chrome in headless mode.
 
         Returns:
         - options: The configured ChromeOptions instance.
@@ -195,9 +192,6 @@ class BaseScraper:
 
         if sys.platform.startswith("win"):
             options.add_argument("--log-level=3")
-
-        if headless:
-            options.add_argument("--headless")
 
         options.add_experimental_option("detach", True)
         return options
@@ -240,8 +234,8 @@ class GrailedScraper(BaseScraper):
     MIN_COUNT = 30
 
     # TODO: what if on init we pass the search query and neccessary things to each class and run the scrapers like that
-    def __init__(self, headless):
-        super().__init__(headless)
+    def __init__(self):
+        super().__init__()
 
     def run_scraper(self, search_query) -> None:
         """

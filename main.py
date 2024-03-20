@@ -34,19 +34,19 @@ def main():
     # TODO: figure out how we're gonna run each websites scraper
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
-    gscraper = GrailedScraper(headless=config["headless"])
+    gscraper = GrailedScraper()
     # also i think that initializing the scraper before running the code for it spawns the empty window
-    dscraper = DepopScraper(headless=config["headless"])
+    dscraper = DepopScraper()
 
     try:
         search_query = config.get("search_query", "")
-        gscraper.run_scraper(search_query)
-        # dscraper.run_scraper(search_query) test when i get home
-        extractor = GrailedDataExtractor(driver=gscraper.driver)
-        df = extractor.extract_data_to_dataframe()
+        #  gscraper.run_scraper(search_query)
+        dscraper.run_scraper(search_query)  # test when i get home
+        # extractor = GrailedDataExtractor(driver=gscraper.driver)
+        # df = extractor.extract_data_to_dataframe()
 
         output_filename = config.get("output", search_query)
-        IOUtils.save_output_to_file(df, output_filename, config)
+        # IOUtils.save_output_to_file(df, output_filename, config)
 
     finally:
         gscraper.driver.quit()

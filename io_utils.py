@@ -187,7 +187,6 @@ class IOUtils:
         """
         config["search_query"] = args.search
         config["output_format"] = IOUtils._get_output_format(args)
-        config["headless"] = args.headless
 
         if args.output_dir:
             config["output_directory"] = args.output_dir
