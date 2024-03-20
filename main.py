@@ -40,7 +40,7 @@ def main():
     try:
         search_query = config.get("search_query", "")
         #  gscraper.run_scraper(search_query)
-        dscraper.run_scraper(search_query)  # test when i get home
+        dscraper.run_scraper(search_query)
         # extractor = GrailedDataExtractor(driver=gscraper.driver)
         # df = extractor.extract_data_to_dataframe()
 
