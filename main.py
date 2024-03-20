@@ -34,8 +34,7 @@ def main():
     # TODO: figure out how we're gonna run each websites scraper
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
-    gscraper = GrailedScraper()
-    # also i think that initializing the scraper before running the code for it spawns the empty window
+    # gscraper = GrailedScraper()  # This spawns empty window for some reason
     dscraper = DepopScraper()
 
     try:
@@ -49,7 +48,8 @@ def main():
         # IOUtils.save_output_to_file(df, output_filename, config)
 
     finally:
-        gscraper.driver.quit()
+        # gcraper.driver.quit()
+        pass
 
 
 if __name__ == "__main__":
