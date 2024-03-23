@@ -122,7 +122,7 @@ class DepopDataExtractor(BaseDataExtractor):
             return await response.text()
 
     # get the soup instance we're gonna use to scrape the links off of
-    async def get_page_soup(self, driver):
+    def get_page_soup(self, driver):
         self.page_source = driver.page_source()
         parser = etree.HTMLParser
         return BeautifulSoup(self.page_source, "lxml", parser=parser)
@@ -133,12 +133,16 @@ class DepopDataExtractor(BaseDataExtractor):
         return BeautifulSoup(html, "lxml", parser=parser)
 
     # get the item links that we're going to scrape from
-    async def extract_item_links(self, soup):
-        return list(
+    async def extract_item_links(self, session, driver):
+        soup = await self.get_individual_soup(driver.page_source)
+
+        links = list(
             map(
                 lambda item_link: f"https://depop.com{item_link.get('href')}",
-                select("a.styles__ProductCard-sc-4aad5806-4.ffvUlI", self.soup),
+                select(".styles__ProductCard-sc-4aad5806-4.ffvUlI", soup),
             )
-        )
+        )[:40]
+
+        return links
 
     pass
