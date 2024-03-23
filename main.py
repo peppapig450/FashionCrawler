@@ -35,12 +35,12 @@ def main():
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
     gscraper = GrailedScraper()  # This spawns empty window for some reason
-    dscraper = DepopScraper()
+    #  dscraper = DepopScraper()
 
     try:
         search_query = config.get("search_query", "")
         gscraper.run_scraper(search_query)
-        dscraper.run_scraper(search_query)
+        #    dscraper.run_scraper(search_query)
         extractor = GrailedDataExtractor(driver=gscraper.driver)
         df = extractor.extract_data_to_dataframe()
 
