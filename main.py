@@ -1,6 +1,9 @@
+import asyncio
+
+from aiohttp import ClientSession
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper
-from data_extraction import GrailedDataExtractor
+from data_extraction import GrailedDataExtractor, DepopDataExtractor
 
 
 # FIXME: problems with saving the output still isnt really efficient
@@ -27,6 +30,15 @@ def run_scraper(scraper, extractor, search_query, output_filename, config):
         scraper.driver.quit()
 
 
+async def test_depop_item_links(DepopDataExtractor, driver):
+    depop_extractor = DepopDataExtractor
+
+    async with ClientSession() as session:
+        item_links = await depop_extractor.extract_item_links(session, driver)
+
+        return item_links
+
+
 def main():
     config = IOUtils.parse_args()
     search_query = config.get("search_query", "")
@@ -41,6 +53,11 @@ def main():
         search_query = config.get("search_query", "")
         # gscraper.run_scraper(search_query)
         dscraper.run_scraper(search_query)
+        extractor = DepopDataExtractor(driver=dscraper.driver)
+        links = asyncio.run(test_depop_item_links(extractor, dscraper.driver))
+
+        print(links)
+
         # extractor = GrailedDataExtractor(driver=gscraper.driver)
         # df = extractor.extract_data_to_dataframe()
 
