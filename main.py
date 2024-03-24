@@ -66,7 +66,7 @@ def main():
         # IOUtils.save_output_to_file(df, output_filename, config)
 
     finally:
-        dscraper.driver.quit()
+        # dscraper.driver.quit()
         pass
 
 
