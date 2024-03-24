@@ -25,7 +25,7 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [ ] Implement logging (TOP PRIORITY)
 
-- [ ] Implement Depop data extraction and scraping.
+- [X] Implement Depop data extraction and scraping.
 
 - [ ] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
 
@@ -37,7 +37,20 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 ## Installation
 
-Install using a virtual environment (recommended)
+Install using [Poetry](https://python-poetry.org/) (recommended):
+
+```bash
+# clone repository
+git clone https://github.com/peppapig450/FashionCrawler
+
+# switch to directory
+cd FashionCrawler
+
+# install dependencies
+poetry install
+```
+
+Install using a virtual environment
 
 ```bash
 # clone repository
