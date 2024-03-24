@@ -65,3 +65,32 @@ python3 -m venv venv && source venv/bin/activate
 # install dependencies
 pip install -r requirements.txt
 ```
+
+## Usage
+Fashion Crawler is a web scraper for various fashion marketplace sites. Below are the available options for running the scraper.
+
+### Options:
+
+#### Site Selection:
+ - By default, all supported sites are enabled, or it uses the sites specified in the `config.yaml` file.
+ - `--enabled-site ENABLE_SITE`: Enable specific site(s) by providing a comma-seperated list of supported site names.
+ - `--disabled-site DISABLE_SITE`: Disable specific site(s) by providing a comma-seperated list of supporte site names.
+
+#### Search Options:
+- `-s SEARCH`, `--search SEARCH`: Specify a search query to scrape for.
+
+#### Output Options:
+- If no output option is specified, the scraper prints the result as a table on the command line.
+- `-j`, `--json`: Output the result as JSON.
+- `-c`, `--csv`: Output the result as CSV.
+- `-y`, `--yaml`: Output the result as YAML.
+- `-o OUTPUT`, `--output OUTPUT`: Specify the output file name (without extension).
+- `--output-dir OUTPUT_DIR`: Specify the output directory.
+
+### Example Usage:
+
+To enable only Grailed and Depop sites, search for "Nike Air Force", and output the result as JSON to a file named "output.json" in the "data" directory, the command would be:
+
+```bash
+poetry run python main.py --enable-site Grailed,Depop --search "Nike Air Force" -j -o output --output-dir data
+```
