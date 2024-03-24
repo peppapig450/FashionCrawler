@@ -27,12 +27,12 @@ def run_scraper(scraper, extractor, search_query, output_filename, config):
         scraper.driver.quit()
 
 
-async def extract_depop_data(extractor):
+def extract_depop_data(extractor):
     depop_extractor = extractor
 
     item_links = depop_extractor.get_item_links()
 
-    df = await depop_extractor.extract_data_from_multiple_urls(item_links)
+    df = depop_extractor.extract_data_from_item_links(item_links)
 
     return df
 
