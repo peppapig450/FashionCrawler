@@ -60,7 +60,7 @@ def main():
         # df = extractor.extract_data_to_dataframe()
 
         output_filename = config.get("output", search_query)
-        # IOUtils.save_output_to_file(df, output_filename, config)
+        IOUtils.save_output_to_file(df, output_filename, config)
 
     finally:
         # dscraper.driver.quit()
