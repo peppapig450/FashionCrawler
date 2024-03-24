@@ -51,11 +51,13 @@ def main():
         search_query = config.get("search_query", "")
         gscraper.run_scraper(search_query)
         dscraper.run_scraper(search_query)
-        dextractor = DepopDataExtractor(driver=gscraper.driver)
-        df = dextractor.extract_data_to_dataframe()
+        depop_extractor = DepopDataExtractor(driver=dscraper.driver)
+        grailed_extractor = GrailedDataExtractor(driver=gscraper.driver)
+        depop_df = extract_depop_data(depop_extractor)
+        grailed_df = grailed_extractor.extract_data_to_dataframe()
 
         output_filename = config.get("output", search_query)
-        IOUtils.save_output_to_file(df, output_filename, config)
+        IOUtils.save_output_to_file(depop_df, output_filename, config)
 
     finally:
         dscraper.driver.quit()
