@@ -152,6 +152,7 @@ class DepopDataExtractor(BaseDataExtractor):
             "Title": self.extract_item_title,
             "Price": self.extract_item_price,
             "Seller": self.extract_item_seller,
+            "Size": self.extract_item_size,
             "Condition": self.extract_item_condition,
             "Description": self.extract_item_description,
             "Listing Age": self.extract_item_time_posted,
