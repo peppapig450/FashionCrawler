@@ -1,6 +1,6 @@
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper
-from data_extraction import GrailedDataExtractor
+from data_extraction import GrailedDataExtractor, DepopDataExtractor
 
 
 # FIXME: problems with saving the output still isnt really efficient
@@ -27,6 +27,16 @@ def run_scraper(scraper, extractor, search_query, output_filename, config):
         scraper.driver.quit()
 
 
+def extract_depop_data(extractor):
+    depop_extractor = extractor
+
+    item_links = depop_extractor.get_item_links()
+
+    df = depop_extractor.extract_data_from_item_links(item_links)
+
+    return df
+
+
 def main():
     config = IOUtils.parse_args()
     search_query = config.get("search_query", "")
@@ -35,20 +45,22 @@ def main():
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
     gscraper = GrailedScraper()  # This spawns empty window for some reason
-    #  dscraper = DepopScraper()
+    dscraper = DepopScraper()
 
     try:
         search_query = config.get("search_query", "")
         gscraper.run_scraper(search_query)
-        #    dscraper.run_scraper(search_query)
-        extractor = GrailedDataExtractor(driver=gscraper.driver)
-        df = extractor.extract_data_to_dataframe()
+        dscraper.run_scraper(search_query)
+        dextractor = DepopDataExtractor(driver=gscraper.driver)
+        df = dextractor.extract_data_to_dataframe()
 
         output_filename = config.get("output", search_query)
         IOUtils.save_output_to_file(df, output_filename, config)
 
     finally:
+        dscraper.driver.quit()
         gscraper.driver.quit()
+        pass
 
 
 if __name__ == "__main__":
