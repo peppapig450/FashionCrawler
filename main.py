@@ -54,8 +54,8 @@ def main():
         # gscraper.run_scraper(search_query)
         dscraper.run_scraper(search_query)
         extractor = DepopDataExtractor(driver=dscraper.driver)
-        links = asyncio.run(test_depop_item_links(extractor, dscraper.driver))
-
+        # links = asyncio.run(test_depop_item_links(extractor, dscraper.driver))
+        links = extractor.get_item_links()
         print(links)
 
         # extractor = GrailedDataExtractor(driver=gscraper.driver)
