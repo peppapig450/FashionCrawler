@@ -117,13 +117,16 @@ class DepopDataExtractor(BaseDataExtractor):
     def __init__(self, driver):
         self.driver = driver
 
-    async def fetch(self, session, url):
+    async def fetch_with_delay(self, session, url, delay):
+        await asyncio.sleep(delay)
         async with session.get(url) as response:
-            return await response.text()
+            html_content = await response.text()
+            print("HTML Content for", url, ":", html_content)
+            return html_content
 
     # soup for each individual link?
     async def get_individual_soup(self, session, url):
-        html = await self.fetch(session, url)
+        html = await self.fetch_with_delay(session, url, 2)
         parser = etree.HTMLParser()
         return BeautifulSoup(html, "lxml", parser=parser)
 
@@ -200,13 +203,33 @@ class DepopDataExtractor(BaseDataExtractor):
 
     async def extract_data(self, session, url):
         soup = await self.get_individual_soup(session, url)
+        print("Extracting data from:", url)
+
+        titles = self.extract_item_title(soup)
+        print("Titles:", titles)
+
+        prices = self.extract_item_price(soup)
+        print("Prices:", prices)
+
+        sellers = self.extract_item_seller(soup)
+        print("Sellers:", sellers)
+
+        conditions = self.extract_item_condition(soup)
+        print("Conditions:", conditions)
+
+        descriptions = self.extract_item_description(soup)
+        print("Descriptions:", descriptions)
+
+        times_posted = self.extract_item_time_posted(soup)
+        print("Times Posted:", times_posted)
+
         data = {
-            "Listing Age": self.extract_item_time_posted(soup),
-            "Title": self.extract_item_title(soup),
-            "Price": self.extract_item_price(soup),
-            "Seller": self.extract_item_seller(soup),
-            "Condition": self.extract_item_condition(soup),
-            "Description": self.extract_item_description(soup),
+            "Listing Age": times_posted,
+            "Title": titles,
+            "Price": prices,
+            "Seller": sellers,
+            "Condition": conditions,
+            "Description": descriptions,
             "Link": url,
         }
 
