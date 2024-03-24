@@ -114,15 +114,42 @@ class GrailedDataExtractor(BaseDataExtractor):
 
 
 class DepopDataExtractor(BaseDataExtractor):
+    """
+    Class for extracting data from Depop.
+
+    Inherits from BaseDataExtractor.
+
+    Attributes:
+        driver: Selenium WebDriver instance for interacting with the web pages.
+    """
+
     def __init__(self, driver):
+        """
+        Initializes a DepopDataExtractor object.
+
+        Args:
+            driver: Selenium WebDriver instance for interacting with the web pages.
+        """
         self.driver = driver
 
     # get the soup instance we're gonna use to scrape the links off of
     def get_page_soup(self):
+        """
+        Gets the BeautifulSoup instance of the current page source.
+
+        Returns:
+            BeautifulSoup instance of the current page source.
+        """
         parser = etree.HTMLParser
         return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
     def get_item_links(self):
+        """
+        Retrieves a list of item links from the current page.
+
+        Returns:
+            List of item links extracted from the current page.
+        """
         soup = self.get_page_soup()
 
         links = list(
@@ -135,6 +162,15 @@ class DepopDataExtractor(BaseDataExtractor):
         return links
 
     def extract_data_from_item_links(self, links):
+        """
+        Extracts data from a list of item links.
+
+        Args:
+            links: List of item links.
+
+        Returns:
+            DataFrame containing extracted data from the item links.
+        """
         all_data = []
 
         for link in links:
@@ -148,6 +184,15 @@ class DepopDataExtractor(BaseDataExtractor):
         return pd.DataFrame(all_data)
 
     def extract_data(self, url):
+        """
+        Extracts data from a single item page.
+
+        Args:
+            url: URL of the item page.
+
+        Returns:
+            Dictionary containing extracted data from the item page.
+        """
         data_extraction_functions = {
             "Title": self.extract_item_title,
             "Price": self.extract_item_price,
@@ -165,7 +210,13 @@ class DepopDataExtractor(BaseDataExtractor):
 
         return extracted_data
 
-    def extract_item_title(self):
+    def extract_item_title(self) -> List[str]:
+        """
+        Extracts the title of the item.
+
+        Returns:
+            List containing the title of the item.
+        """
         return list(
             title.text.strip()
             for title in select(
@@ -175,6 +226,12 @@ class DepopDataExtractor(BaseDataExtractor):
         )
 
     def extract_item_price(self) -> List[str]:
+        """
+        Extracts the price of the item.
+
+        Returns:
+            List containing the price of the item.
+        """
         price_elements = select(
             ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
             self.soup,
@@ -194,7 +251,13 @@ class DepopDataExtractor(BaseDataExtractor):
 
         return prices
 
-    def extract_item_seller(self):
+    def extract_item_seller(self) -> List[str]:
+        """
+        Extracts the seller of the item.
+
+        Returns:
+            List containing the seller of the item.
+        """
         seller_element = select(
             "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly", self.soup
         )
@@ -204,6 +267,12 @@ class DepopDataExtractor(BaseDataExtractor):
             return []
 
     def extract_item_description(self):
+        """
+        Extracts the description of the item.
+
+        Returns:
+            List containing the description of the item.
+        """
         return list(
             description.text.strip()
             for description in select(
@@ -212,7 +281,13 @@ class DepopDataExtractor(BaseDataExtractor):
             )
         )
 
-    def extract_item_condition(self):
+    def extract_item_condition(self) -> List[str]:
+        """
+        Extracts the condition of the item.
+
+        Returns:
+            List containing the condition(s) of the item.
+        """
         attribute_elements = select(
             "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
         )
@@ -226,6 +301,12 @@ class DepopDataExtractor(BaseDataExtractor):
         return conditions
 
     def extract_item_size(self):
+        """
+        Extracts the size of the item.
+
+        Returns:
+            List containing the size of the item.
+        """
         attribute_elements = select(
             "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
         )
@@ -237,6 +318,12 @@ class DepopDataExtractor(BaseDataExtractor):
         return size
 
     def extract_item_time_posted(self):
+        """
+        Extracts the time when the item was listed.
+
+        Returns:
+            List containing the time of when the item was listed.
+        """
         return list(
             time_posted.text.replace("Listed", "").strip()
             for time_posted in select(
