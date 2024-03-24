@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -131,91 +133,86 @@ class DepopDataExtractor(BaseDataExtractor):
 
         return links
 
-    def extract_item_title(self, soup):
+    def extract_data_from_item_links(self, links):
+        all_data = []
+
+        for link in links:
+            self.driver.get(link)
+            time.sleep(1)
+
+            self.soup = self.get_page_soup()
+            data = self.extract_data(self.driver.current_url)
+            all_data.append(data)
+
+        return pd.DataFrame(all_data)
+
+    def extract_data(self, url):
+        data_extraction_functions = {
+            "Title": self.extract_item_title,
+            "Price": self.extract_item_price,
+            "Seller": self.extract_item_seller,
+            "Condition": self.extract_item_condition,
+            "Description": self.extract_item_description,
+            "Listing Age": self.extract_item_time_posted,
+            "Link": lambda: url,
+        }
+
+        extracted_data = {}
+        for column, func in data_extraction_functions.items():
+            extracted_data[column] = func()
+
+        return extracted_data
+
+    def extract_item_title(self):
         return [
             title.text.strip()
             for title in select(
                 ".ProductDetailsSticky-styles__DesktopKeyProductInfo-sc-81fc4a15-9.epoVmq  h1",
-                soup,
+                self.soup,
             )
         ]
 
-    def extract_item_price(self, soup):
+    def extract_item_price(self):
         return [
             price.text.strip()
             for price in select(
                 ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
-                soup,
+                self.soup,
             )
         ]
 
-    def extract_item_seller(self, soup):
+    def extract_item_seller(self):
         return [
             seller.text.strip()
             for seller in select(
                 "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly:nth-of-type(2)",
-                soup,
+                self.soup,
             )
         ]
 
-    def extract_item_description(self, soup):
+    def extract_item_description(self):
         return [
             description.text.strip()
             for description in select(
                 ".styles__Container-sc-d367c36f-0.ffwMQV  p",
-                soup,
+                self.soup,
             )
         ]
 
-    def extract_item_condition(self, soup):
+    def extract_item_condition(self):
         return [
             condition.text.strip()
             for condition in select(
                 "p.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO:first-of-type",
-                soup,
+                self.soup,
             )
         ]
 
-    def extract_item_time_posted(self, soup):
+    def extract_item_time_posted(self):
         return [
             time_posted.text.replace("Listed", "").strip()
             for time_posted in select(
                 "time.sc-eDnWTT.styles__Time-sc-630c0aef-0.gpa-dDQ.bgyRJa.styles__StyledPostTime-sc-2b987745-4.fofwdp",
-                soup,
+                self.soup,
             )
         ]
-
-    def extract_data(
-        self,
-        soup,
-        url,
-    ):
-        print("Extracting data from:", url)
-
-        titles = self.extract_item_title(soup)
-        print("Titles:", titles)
-
-        prices = self.extract_item_price(soup)
-        print("Prices:", prices)
-
-        sellers = self.extract_item_seller(soup)
-        print("Sellers:", sellers)
-
-        conditions = self.extract_item_condition(soup)
-        print("Conditions:", conditions)
-
-        descriptions = self.extract_item_description(soup)
-        print("Descriptions:", descriptions)
-
-        times_posted = self.extract_item_time_posted(soup)
-        print("Times Posted:", times_posted)
-
-        data = {
-            "Listing Age": times_posted,
-            "Title": titles,
-            "Price": prices,
-            "Seller": sellers,
-            "Condition": conditions,
-            "Description": descriptions,
-            "Link": url,
-        }
