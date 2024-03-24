@@ -122,19 +122,12 @@ class DepopDataExtractor(BaseDataExtractor):
             return await response.text()
 
     # get the soup instance we're gonna use to scrape the links off of
-    def get_page_soup(self, driver):
-        self.page_source = driver.page_source()
+    def get_page_soup(self):
         parser = etree.HTMLParser
-        return BeautifulSoup(self.page_source, "lxml", parser=parser)
+        return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
-    # soup for each individual link?
-    async def get_individual_soup(self, html):
-        parser = etree.HTMLParser()
-        return BeautifulSoup(html, "lxml", parser=parser)
-
-    # get the item links that we're going to scrape from
-    async def extract_item_links(self, session, driver):
-        soup = await self.get_individual_soup(driver.page_source)
+    def get_item_links(self):
+        soup = self.get_page_soup()
 
         links = list(
             map(
@@ -144,5 +137,64 @@ class DepopDataExtractor(BaseDataExtractor):
         )[:40]
 
         return links
+
+    # soup for each individual link?
+    async def get_individual_soup(self, html):
+        parser = etree.HTMLParser()
+        return BeautifulSoup(html, "lxml", parser=parser)
+
+    def extract_item_titles(self, soup):
+        return [
+            title.text.strip()
+            for title in select(
+                ".ProductDetailsSticky-styles__DesktopKeyProductInfo-sc-81fc4a15-9.epoVmq  h1",
+                soup,
+            )
+        ]
+
+    def extract_item_prices(self, soup):
+        return [
+            price.text.strip()
+            for price in select(
+                ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
+                soup,
+            )
+        ]
+
+    def extract_item_sellers(self, soup):
+        return [
+            seller.text.strip()
+            for seller in select(
+                "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly:nth-of-type(2)",
+                soup,
+            )
+        ]
+
+    def extract_item_description(self, soup):
+        return [
+            description.text.strip()
+            for description in select(
+                ".styles__Container-sc-d367c36f-0.ffwMQV  p",
+                soup,
+            )
+        ]
+
+    def extract_item_condition(self, soup):
+        return [
+            condition.text.strip()
+            for condition in select(
+                "p.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO:first-of-type",
+                soup,
+            )
+        ]
+
+    def extract_time_posted(self, soup):
+        return [
+            time_posted.text.replace("Listed", "").strip()
+            for time_posted in select(
+                "time.sc-eDnWTT.styles__Time-sc-630c0aef-0.gpa-dDQ.bgyRJa.styles__StyledPostTime-sc-2b987745-4.fofwdp",
+                soup,
+            )
+        ]
 
     pass
