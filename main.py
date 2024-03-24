@@ -30,13 +30,14 @@ def run_scraper(scraper, extractor, search_query, output_filename, config):
         scraper.driver.quit()
 
 
-async def test_depop_item_links(DepopDataExtractor, driver):
-    depop_extractor = DepopDataExtractor
+async def extract_depop_data(extractor):
+    depop_extractor = extractor
 
-    async with ClientSession() as session:
-        item_links = await depop_extractor.extract_item_links(session, driver)
+    item_links = depop_extractor.get_item_links()
 
-        return item_links
+    df = await depop_extractor.extract_data_from_multiple_urls(item_links)
+
+    return df
 
 
 def main():
@@ -54,9 +55,9 @@ def main():
         # gscraper.run_scraper(search_query)
         dscraper.run_scraper(search_query)
         extractor = DepopDataExtractor(driver=dscraper.driver)
-        # links = asyncio.run(test_depop_item_links(extractor, dscraper.driver))
-        links = extractor.get_item_links()
-        print(links)
+
+        df = asyncio.run(extract_depop_data(extractor))
+        print(df)
 
         # extractor = GrailedDataExtractor(driver=gscraper.driver)
         # df = extractor.extract_data_to_dataframe()
