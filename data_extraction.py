@@ -1,7 +1,3 @@
-import asyncio
-import random
-
-import aiohttp
 import pandas as pd
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -118,21 +114,6 @@ class DepopDataExtractor(BaseDataExtractor):
     def __init__(self, driver):
         self.driver = driver
 
-    async def fetch(self, session, url):
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-        }
-        async with session.get(url, headers=headers) as response:
-            html_content = await response.text()
-            print("HTML Content for", url, ":", html_content)
-            return html_content
-
-    # soup for each individual link?
-    async def get_individual_soup(self, session, url):
-        html = await self.fetch(session, url)
-        parser = etree.HTMLParser()
-        return BeautifulSoup(html, "lxml", parser=parser)
-
     # get the soup instance we're gonna use to scrape the links off of
     def get_page_soup(self):
         parser = etree.HTMLParser
@@ -204,48 +185,37 @@ class DepopDataExtractor(BaseDataExtractor):
             )
         ]
 
-    async def extract_data(self, session, url, semaphore):
-        async with semaphore:
-            soup = await self.get_individual_soup(session, url)
-            print("Extracting data from:", url)
+    def extract_data(
+        self,
+        soup,
+        url,
+    ):
+        print("Extracting data from:", url)
 
-            titles = self.extract_item_title(soup)
-            print("Titles:", titles)
+        titles = self.extract_item_title(soup)
+        print("Titles:", titles)
 
-            prices = self.extract_item_price(soup)
-            print("Prices:", prices)
+        prices = self.extract_item_price(soup)
+        print("Prices:", prices)
 
-            sellers = self.extract_item_seller(soup)
-            print("Sellers:", sellers)
+        sellers = self.extract_item_seller(soup)
+        print("Sellers:", sellers)
 
-            conditions = self.extract_item_condition(soup)
-            print("Conditions:", conditions)
+        conditions = self.extract_item_condition(soup)
+        print("Conditions:", conditions)
 
-            descriptions = self.extract_item_description(soup)
-            print("Descriptions:", descriptions)
+        descriptions = self.extract_item_description(soup)
+        print("Descriptions:", descriptions)
 
-            times_posted = self.extract_item_time_posted(soup)
-            print("Times Posted:", times_posted)
+        times_posted = self.extract_item_time_posted(soup)
+        print("Times Posted:", times_posted)
 
-            data = {
-                "Listing Age": times_posted,
-                "Title": titles,
-                "Price": prices,
-                "Seller": sellers,
-                "Condition": conditions,
-                "Description": descriptions,
-                "Link": url,
-            }
-
-        return data
-
-    async def extract_data_from_multiple_urls(self, urls):
-        semaphore = asyncio.Semaphore(3)
-        tasks = []
-        async with aiohttp.ClientSession() as session:
-            for url in urls:
-                tasks.append(self.extract_data(session, url, semaphore))
-                await asyncio.sleep(random.uniform(1, 3))
-
-            results = await asyncio.gather(*tasks)
-            return pd.DataFrame(results)
+        data = {
+            "Listing Age": times_posted,
+            "Title": titles,
+            "Price": prices,
+            "Seller": sellers,
+            "Condition": conditions,
+            "Description": descriptions,
+            "Link": url,
+        }

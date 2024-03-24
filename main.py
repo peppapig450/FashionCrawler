@@ -1,6 +1,3 @@
-import asyncio
-
-from aiohttp import ClientSession
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper
 from data_extraction import GrailedDataExtractor, DepopDataExtractor
@@ -56,7 +53,7 @@ def main():
         dscraper.run_scraper(search_query)
         extractor = DepopDataExtractor(driver=dscraper.driver)
 
-        df = asyncio.run(extract_depop_data(extractor))
+        df = extract_depop_data(extractor)
         print(df)
 
         # extractor = GrailedDataExtractor(driver=gscraper.driver)
