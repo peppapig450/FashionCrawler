@@ -1,4 +1,5 @@
 import time
+from typing import List
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -164,55 +165,81 @@ class DepopDataExtractor(BaseDataExtractor):
         return extracted_data
 
     def extract_item_title(self):
-        return [
+        return list(
             title.text.strip()
             for title in select(
                 ".ProductDetailsSticky-styles__DesktopKeyProductInfo-sc-81fc4a15-9.epoVmq  h1",
                 self.soup,
             )
-        ]
+        )
 
-    def extract_item_price(self):
-        return [
-            price.text.strip()
-            for price in select(
-                ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
-                self.soup,
-            )
-        ]
+    def extract_item_price(self) -> List[str]:
+        price_elements = select(
+            ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
+            self.soup,
+        )
+        prices = []
+
+        for price_element in price_elements:
+            aria_label = price_element.get("aria-label", "")
+            price_text = price_element.text.strip()
+
+            if "Discounted price" == aria_label:
+                prices.clear()
+                prices.append(price_text)
+                break
+            else:
+                prices.append(price_text)
+
+        return prices
 
     def extract_item_seller(self):
-        return [
-            seller.text.strip()
-            for seller in select(
-                "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly:nth-of-type(2)",
-                self.soup,
-            )
-        ]
+        seller_element = select(
+            "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly", self.soup
+        )
+        if seller_element:
+            return [seller_element[0].text.strip()]
+        else:
+            return []
 
     def extract_item_description(self):
-        return [
+        return list(
             description.text.strip()
             for description in select(
                 ".styles__Container-sc-d367c36f-0.ffwMQV  p",
                 self.soup,
             )
-        ]
+        )
 
     def extract_item_condition(self):
-        return [
-            condition.text.strip()
-            for condition in select(
-                "p.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO:first-of-type",
-                self.soup,
-            )
-        ]
+        attribute_elements = select(
+            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
+        )
+        conditions = []
+
+        if len(attribute_elements) >= 3:
+            conditions.append(attribute_elements[1].text.strip())
+        elif len(attribute_elements) <= 2:
+            conditions.append(attribute_elements[0].text.strip())
+
+        return conditions
+
+    def extract_item_size(self):
+        attribute_elements = select(
+            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
+        )
+        size = []
+
+        if len(attribute_elements) >= 3:
+            size.append(attribute_elements[0].text.strip())
+
+        return size
 
     def extract_item_time_posted(self):
-        return [
+        return list(
             time_posted.text.replace("Listed", "").strip()
             for time_posted in select(
                 "time.sc-eDnWTT.styles__Time-sc-630c0aef-0.gpa-dDQ.bgyRJa.styles__StyledPostTime-sc-2b987745-4.fofwdp",
                 self.soup,
             )
-        ]
+        )
