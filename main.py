@@ -44,24 +44,29 @@ def main():
     # TODO: figure out how we're gonna run each websites scraper
     # create a dictionary ? list
     # or pass config with the enabled sites to run_scraper or another method and handle from there.
-    gscraper = GrailedScraper()  # This spawns empty window for some reason
+    # This spawns empty window for some reason
     dscraper = DepopScraper()
 
     try:
         search_query = config.get("search_query", "")
+        gscraper = GrailedScraper()
         gscraper.run_scraper(search_query)
+        grailed_extractor = GrailedDataExtractor(driver=gscraper.driver)
+        grailed_df = grailed_extractor.extract_data_to_dataframe()
+        gscraper.driver.quit()
+
+        dscraper = DepopScraper()
         dscraper.run_scraper(search_query)
         depop_extractor = DepopDataExtractor(driver=dscraper.driver)
-        grailed_extractor = GrailedDataExtractor(driver=gscraper.driver)
         depop_df = extract_depop_data(depop_extractor)
-        grailed_df = grailed_extractor.extract_data_to_dataframe()
+        dscraper.driver.quit()
 
         output_filename = config.get("output", search_query)
         IOUtils.save_output_to_file(depop_df, output_filename, config)
+        IOUtils.save_output_to_file(grailed_df, output_filename, config)
 
     finally:
-        dscraper.driver.quit()
-        gscraper.driver.quit()
+
         pass
 
 
