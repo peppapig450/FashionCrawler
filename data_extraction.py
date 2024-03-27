@@ -143,6 +143,25 @@ class DepopDataExtractor(BaseDataExtractor):
         parser = etree.HTMLParser
         return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
+    def extract_data_to_dataframe(self):
+        """
+        Extracts data from item links obtained by `get_item_links` method and returns a DataFrame.
+
+        This method retrieves item links using the `get_item_links` method, then extracts
+        data from these links using the `extract_data_from_item_links` method. The extracted
+        data is returned as a DataFrame.
+
+        Returns:
+        - pd.DataFrame: Extracted data as a DataFrame.
+
+        Example:
+            extractor = DepopDataExtractor(driver)
+            dataframe = extractor.extract_data_to_dataframe()
+        """
+        item_links = self.get_item_links()
+        df = self.extract_data_from_item_links(item_links)
+        return df
+
     def get_item_links(self):
         """
         Retrieves a list of item links from the current page.
