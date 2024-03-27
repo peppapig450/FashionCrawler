@@ -102,7 +102,7 @@ class IOUtils:
             config = {
                 "sites": [
                     {"name": "grailed", "enabled": True},
-                    {"name": "depop", "enabled": False},
+                    {"name": "depop", "enabled": True},
                     {"name": "goat", "enabled": False},
                     {"name": "stockx", "enabled": False},
                 ]
