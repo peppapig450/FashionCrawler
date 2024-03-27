@@ -1,11 +1,12 @@
+import pandas as pd
+
+from data_extraction import DepopDataExtractor, GrailedDataExtractor
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper
-from data_extraction import GrailedDataExtractor, DepopDataExtractor
 
 
 # FIXME: problems with saving the output still isnt really efficient
-# FIXME: also spawns some a random blank window
-def run_scraper(scraper, extractor, search_query, output_filename, config):
+def run_scraper(scraper, extractor, search_query, config):
     """
     Run the specified scraper, extract data, and save it to a file.
 
@@ -13,61 +14,42 @@ def run_scraper(scraper, extractor, search_query, output_filename, config):
     - scraper: The scraper object.
     - extractor: The data extractor object corresponding to the scraper.
     - search_query: The search query.
-    - output_filename: The output filename.
     - config: Configuration settings.
 
     Returns:
-    - None
+    - pd.DataFrame: Extracted data as a DataFrame.
     """
     try:
         scraper.run_scraper(search_query)
         df = extractor.extract_data_to_dataframe()
-        IOUtils.save_output_to_file(df, output_filename, config)
+        return df
     finally:
         scraper.driver.quit()
-
-
-def extract_depop_data(extractor):
-    depop_extractor = extractor
-
-    item_links = depop_extractor.get_item_links()
-
-    df = depop_extractor.extract_data_from_item_links(item_links)
-
-    return df
 
 
 def main():
     config = IOUtils.parse_args()
     search_query = config.get("search_query", "")
 
-    # TODO: figure out how we're gonna run each websites scraper
-    # create a dictionary ? list
-    # or pass config with the enabled sites to run_scraper or another method and handle from there.
-    # This spawns empty window for some reason
-    dscraper = DepopScraper()
+    scrapers = {
+        "depop": (DepopScraper(), DepopDataExtractor),
+        "grailed": (GrailedScraper(), GrailedDataExtractor),
+    }
 
-    try:
-        search_query = config.get("search_query", "")
-        gscraper = GrailedScraper()
-        gscraper.run_scraper(search_query)
-        grailed_extractor = GrailedDataExtractor(driver=gscraper.driver)
-        grailed_df = grailed_extractor.extract_data_to_dataframe()
-        gscraper.driver.quit()
+    combined_df = pd.DataFrame()
 
-        dscraper = DepopScraper()
-        dscraper.run_scraper(search_query)
-        depop_extractor = DepopDataExtractor(driver=dscraper.driver)
-        depop_df = extract_depop_data(depop_extractor)
-        dscraper.driver.quit()
+    enabled_sites = [site["name"] for site in config["sites"] if site["enabled"]]
+    for site in enabled_sites:
+        scraper, extractor_cls = scrapers.get(site)
+        if scraper:
+            extractor = extractor_cls(driver=scraper.driver)
+            df = run_scraper(scraper, extractor, search_query, config)
+            if df is not None and not df.empty:
+                combined_df = pd.concat([combined_df, df], ignore_index=True)
 
-        output_filename = config.get("output", search_query)
-        IOUtils.save_output_to_file(depop_df, output_filename, config)
-        IOUtils.save_output_to_file(grailed_df, output_filename, config)
-
-    finally:
-
-        pass
+    if not combined_df.empty:
+        combined_output_filename = config.get("output", search_query)
+        IOUtils.save_output_to_file(combined_df, combined_output_filename, config)
 
 
 if __name__ == "__main__":
