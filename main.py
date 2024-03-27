@@ -40,7 +40,7 @@ def main():
 
     enabled_sites = [site["name"] for site in config["sites"] if site["enabled"]]
     for site in enabled_sites:
-        scraper, extractor_cls = scrapers.get(site)
+        scraper, extractor_cls = scrapers.get(site)  # type: ignore
         if scraper:
             extractor = extractor_cls(driver=scraper.driver)
             df = run_scraper(scraper, extractor, search_query, config)
