@@ -15,13 +15,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-from logger import MyLogger
-
 
 class BaseScraper:
     def __init__(self):
-        self.logger = MyLogger()
-
         try:
             options = self.configure_driver_options()
             self.driver = self.get_chrome_driver(options)
