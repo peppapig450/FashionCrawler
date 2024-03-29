@@ -15,14 +15,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
+from logger import MyLogger
+
 
 class BaseScraper:
     def __init__(self):
+        self.logger = MyLogger()
+
         try:
             options = self.configure_driver_options()
             self.driver = self.get_chrome_driver(options)
         except Exception as e:
-            print(f"An error occurred while initializing the ChromeDriver: {e}")
+            self.logger.log_error(
+                f"An error occurred while initializing the ChromeDriver: {e}"
+            )
             raise
 
     def accept_cookies(self, cookie_css_selector: str) -> None:
@@ -40,8 +46,11 @@ class BaseScraper:
                 EC.element_to_be_clickable((By.CSS_SELECTOR, cookie_css_selector))
             )
             ActionChains(self.driver).double_click(cookies_button).perform()
-        except TimeoutException:
-            print("Timeout occured while accepting cookies.")
+        except TimeoutException as e:
+            self.logger.log_error(
+                f"An error occurred while initializing the ChromeDriver: {e}"
+            )
+            raise
 
     @staticmethod
     def get_search_query() -> str:
@@ -159,12 +168,12 @@ class BaseScraper:
                 )
                 > min_count
             )
-            print(
-                f"Number of elements matching class '{class_name}' exceeded {min_count}."
+            self.logger.log_info(
+                f"Numbers of elements matching class '{class_name}' exceed {min_count}."
             )
-        except TimeoutException:
-            print(
-                f"Timeout occurred while waiting for class count to exceed {min_count}."
+        except TimeoutException as e:
+            self.logger.log_warning(
+                f"Timeout occurred while waiting for class count to exceed {min_count}: {e}"
             )
 
     @staticmethod
@@ -302,7 +311,7 @@ class GrailedScraper(BaseScraper):
             StaleElementReferenceException,
             TimeoutException,
         ) as e:
-            print(f"Error interacting with search bar: {e}")
+            self.logger.log_error(f"Error interacting with search bar: {e}")
             self.driver.quit()
 
     def _dismiss_login_popup(self, timeout: int) -> None:
@@ -343,7 +352,7 @@ class GrailedScraper(BaseScraper):
             )
 
         except TimeoutException:
-            print("Login popup did not appear within the timeout.")
+            self.logger.log_error("Login popup did not appear within the timeout.")
 
 
 class DepopScraper(BaseScraper):
@@ -449,9 +458,9 @@ class DepopScraper(BaseScraper):
                     )
                 )
             except TimeoutException:
-                pass
-                # raise NoSuchElementException("Both primary and backup submit button selectors not found")
-                # TODO: add proper logging later
+                raise NoSuchElementException(
+                    "Both primary and backup submit button selectors not found"
+                )
 
         submit_button.click()
 
