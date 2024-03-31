@@ -1,4 +1,5 @@
 import sys
+import traceback
 from abc import ABC, abstractmethod
 
 from selenium import webdriver
@@ -42,7 +43,6 @@ class BaseScraper:
             ActionChains(self.driver).double_click(cookies_button).perform()
         except TimeoutException as e:
             print("Timeout occured while accepting cookies.")
-            raise
 
     @staticmethod
     def get_search_query() -> str:
@@ -196,7 +196,7 @@ class BaseScraper:
         if sys.platform.startswith("win"):
             options.add_argument("--log-level=3")
 
-        options.add_experimental_option("detach", True)
+        options.add_argument("--disable-blink-features=AutomationControlled")
         return options
 
     def wait_for_page_load(self, class_name: str, min_count: int) -> None:
@@ -236,7 +236,6 @@ class GrailedScraper(BaseScraper):
     ITEM_CLASS_NAME = "feed-item"
     MIN_COUNT = 30
 
-    # TODO: what if on init we pass the search query and neccessary things to each class and run the scrapers like that
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
 
@@ -303,8 +302,9 @@ class GrailedScraper(BaseScraper):
             StaleElementReferenceException,
             TimeoutException,
         ) as e:
-            print(f"Error interacting with search bar: {e}")
-            self.driver.quit()
+            print(f"Error interacting with Grailed search bar: {e}")
+            traceback.print_exc()
+            sys.exit(1)
 
     def _dismiss_login_popup(self, timeout: int) -> None:
         """
