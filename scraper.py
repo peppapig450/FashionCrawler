@@ -237,8 +237,8 @@ class GrailedScraper(BaseScraper):
     MIN_COUNT = 30
 
     # TODO: what if on init we pass the search query and neccessary things to each class and run the scrapers like that
-    def __init__(self):
-        super().__init__()
+    def __init__(self, base_scraper):
+        self.driver = base_scraper.driver
 
     def run_scraper(self, search_query) -> None:
         """
@@ -364,6 +364,9 @@ class DepopScraper(BaseScraper):
     # Item related constants for page loading
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
+
+    def __init__(self, base_scraper):
+        self.driver = base_scraper.driver
 
     def run_scraper(self, search_query) -> None:
         """
