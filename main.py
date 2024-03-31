@@ -3,7 +3,6 @@ from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper, BaseScraper
 
 
-# FIXME: problems with saving the output still isnt really efficient
 def run_scraper(scraper, extractor, search_query):
     """
     Run the specified scraper and extract data.
