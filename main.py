@@ -19,12 +19,10 @@ def run_scraper(scraper, extractor, search_query, config):
     Returns:
     - pd.DataFrame: Extracted data as a DataFrame.
     """
-    try:
-        scraper.run_scraper(search_query)
-        df = extractor.extract_data_to_dataframe()
-        return df
-    finally:
-        scraper.driver.quit()
+    scraper.run_scraper(search_query)
+    df = extractor.extract_data_to_dataframe()
+    print(df)
+    return df
 
 
 def main():
@@ -47,6 +45,7 @@ def main():
             extractor = extractor_cls(driver=base_scraper.driver)
             df = run_scraper(scraper, extractor, search_query, config)
             if df is not None and not df.empty:
+                print(df)
                 combined_df = pd.concat([combined_df, df], ignore_index=True)
 
     if not combined_df.empty:
