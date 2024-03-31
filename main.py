@@ -1,24 +1,22 @@
-import pandas as pd
-
 from data_extraction import DepopDataExtractor, GrailedDataExtractor
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper, BaseScraper
 
 
 # FIXME: problems with saving the output still isnt really efficient
-def run_scraper(scraper, extractor, search_query, config):
+def run_scraper(scraper, extractor, search_query):
     """
-    Run the specified scraper, extract data, and save it to a file.
+    Run the specified scraper and extract data.
 
     Args:
     - scraper: The scraper object.
     - extractor: The data extractor object corresponding to the scraper.
     - search_query: The search query.
-    - config: Configuration settings.
 
     Returns:
     - pd.DataFrame: Extracted data as a DataFrame.
     """
+
     scraper.run_scraper(search_query)
     df = extractor.extract_data_to_dataframe()
     return df
@@ -45,7 +43,7 @@ def main():
         scraper, extractor_cls = scrapers.get(site)  # type: ignore
         if scraper:
             extractor = extractor_cls(driver=base_scraper.driver)
-            df = run_scraper(scraper, extractor, search_query, config)
+            df = run_scraper(scraper, extractor, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df
 
