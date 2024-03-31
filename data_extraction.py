@@ -76,7 +76,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pd.DataFrame.from_dict(extracted_data, orient="index")
+        df = pd.DataFrame.from_dict(extracted_data, orient="columns")
 
         return df
 
