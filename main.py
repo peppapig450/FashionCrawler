@@ -35,7 +35,10 @@ def main():
         "grailed": (GrailedScraper(base_scraper), GrailedDataExtractor),
     }
 
-    combined_df = pd.DataFrame()
+    dataframes = {
+        "depop": None,
+        "grailed": None,
+    }
 
     enabled_sites = [site["name"] for site in config["sites"] if site["enabled"]]
     for site in enabled_sites:
@@ -44,11 +47,10 @@ def main():
             extractor = extractor_cls(driver=base_scraper.driver)
             df = run_scraper(scraper, extractor, search_query, config)
             if df is not None and not df.empty:
-                combined_df = pd.concat([combined_df, df], ignore_index=True)
+                dataframes[site] = df
 
-    if not combined_df.empty:
-        combined_output_filename = config.get("output", search_query)
-        IOUtils.save_output_to_file(combined_df, combined_output_filename, config)
+    output_filename = str(config.get("output", search_query))
+    IOUtils.handle_dataframe_output(dataframes, output_filename, config)
 
 
 if __name__ == "__main__":
