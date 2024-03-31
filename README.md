@@ -23,11 +23,13 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 #### To-Do List / Possible Features (By Priority)
 
-- [ ] Implement logging (TOP PRIORITY)
+- [ ] Implement logging
 
-- [X] Implement Depop data extraction and scraping.
+- ~~[X] Implement Depop data extraction and scraping.~~
 
-- [ ] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
+- [ ] Implement Stockx data extraction and scraping.
+
+- [X] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
 
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
 
