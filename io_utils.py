@@ -186,22 +186,22 @@ class IOUtils:
             config["output_directory"] = args.output_dir
 
     @staticmethod
-    def save_output_to_file(df, output_filename, config):
+    def handle_dataframe_output(dataframes: dict, output_filename: str, config):
         """
-        Save the DataFrame to a file based on the specified output format.
+        Save DataFrames to a file based on the specified output format.
 
         Args:
-            df: The Pandas DataFrame to be saved.
+            dataframes: A dictionary containing DataFrames to be saved.
             output_filename: The name of the output file.
             config: The configuration settings containing information about the output format.
 
         Returns:
             None
         """
-        output_filename = IOUtils._generate_unique_filename(output_filename)
 
         output_directory = config.get("output_directory", "")
 
+        output_filename.replace(" ", "_")
         if output_directory:
             os.makedirs(output_directory, exist_ok=True)
             output_filename = os.path.join(output_directory, output_filename)
@@ -209,79 +209,80 @@ class IOUtils:
         output_format = config["output_format"]
 
         if output_format == "json":
-            IOUtils._save_as_json(df, output_filename)
+            IOUtils._save_as_json(dataframes, output_filename)
         elif output_format == "csv":
-            IOUtils._save_as_csv(df, output_filename)
+            IOUtils._save_as_csv(dataframes, output_filename)
         elif output_format == "yaml":
-            IOUtils._save_as_yaml(df, output_filename)
+            IOUtils._save_as_yaml(dataframes, output_filename)
         else:
-            print(df)
+            IOUtils._print_out_dataframes(dataframes)
 
     @staticmethod
-    def _save_as_json(df, filename):
+    def _save_as_json(dataframes: dict, filename: str):
         """
-        Save a DataFrame to a JSON file.
+        Save DataFrames to a single JSON file.
 
         Args:
-            df: The Pandas DataFrame to be saved.
+            dataframes: A dictionary containing the Pandas DataFrames to be saved.
             filename: The name of the output file.
 
         Returns:
             None
         """
         with open(f"{filename}.json", "w", encoding="utf-8") as json_file:
-            json.dump(df.to_dict(orient="records"), json_file, indent=4)
+            json.dump(
+                {
+                    name: df.to_dict("records")
+                    for name, df in dataframes.items()
+                    if df is not None
+                },
+                json_file,
+                indent=4,
+            )
 
     @staticmethod
-    def _save_as_csv(df, filename):
+    def _save_as_csv(dataframes: dict, filename: str):
         """
-        Save a DataFrame to a CSV file.
+        Save DataFrames to a CSV file.
 
         Args:
-            df: The Pandas DataFrame to be saved.
+            dataframes: A dictionary containing the Pandas DataFrames to be saved.
             filename: The name of the output file.
 
         Returns:
             None
         """
-        df.to_csv(f"{filename}.csv", index=False)
+        for name, df in dataframes.items():
+            output_filename = f"{name}_{filename}.csv"
+            df.to_csv(output_filename, index=False)
 
     @staticmethod
-    def _save_as_yaml(df, filename):
+    def _save_as_yaml(dataframes: dict, filename: str):
         """
-        Save a DataFrame to a YAML file.
+        Save DataFrames to a YAML file.
 
         Args:
-            df: The Pandas DataFrame to be saved.
+            dataframes: A dictionary containing the Pandas DataFrames to be saved.
             filename: The name of the output file.
 
         Returns:
             None
         """
+        combined_data = {name: df.to_dict("records") for name, df in dataframes.items()}
+
         with open(f"{filename}.yaml", "w", encoding="utf-8") as yaml_file:
-            yaml.safe_dump(df.to_dict(orient="records"), yaml_file)
+            yaml.safe_dump(combined_data, yaml_file)
 
     @staticmethod
-    def _generate_unique_filename(filename):
+    def _print_out_dataframes(dataframes: dict):
         """
-        Generate a unique filename by appending a number to the base filename if it already exists.
+        Print out the DataFrames.
 
         Args:
-        - filename: The original filename to be checked and modified if necessary.
+            dataframes: A dictionary containing the Pandas DataFrames.
 
         Returns:
-        - The unique filename.
+            None
         """
-        base_filename, extension = os.path.splitext((filename.replace(" ", "_")))
-        match = re.match(r"^(.*)_?(\d+)$", base_filename)
-        if match:
-            base_filename = match.group(1)
-            count = int(match.group(2)) + 1
-            new_filename = f"{base_filename}_{count}{extension}"
-        else:
-            new_filename = f"{base_filename}_1{extension}"
-
-        if os.path.exists(new_filename):
-            return IOUtils._generate_unique_filename(new_filename)
-        else:
-            return new_filename
+        for name, df in dataframes.items():
+            print(f"{name}\n", df)
