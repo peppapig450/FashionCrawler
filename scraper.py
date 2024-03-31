@@ -1,6 +1,7 @@
 import sys
+import time
 import traceback
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -42,7 +43,8 @@ class BaseScraper:
             )
             ActionChains(self.driver).double_click(cookies_button).perform()
         except TimeoutException as e:
-            print("Timeout occured while accepting cookies.")
+            # print("Timeout occured while accepting cookies.")
+            pass
 
     @staticmethod
     def get_search_query() -> str:
@@ -251,6 +253,7 @@ class GrailedScraper(BaseScraper):
         """
         self._navigate_and_search(search_query)
         super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
+        time.sleep(5)
 
     def _navigate_and_search(self, search_query: str) -> None:
         """
