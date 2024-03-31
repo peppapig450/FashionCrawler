@@ -25,7 +25,7 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [ ] Implement logging
 
-- ~~[X] Implement Depop data extraction and scraping.~~
+- [X] Implement Depop data extraction and scraping.
 
 - [ ] Implement Stockx data extraction and scraping.
 
@@ -34,8 +34,9 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
 
 - [ ] Options to filter the dataframe by a category
+    - [ ] Process the outputted files and filter
 
-- [ ] Headless mode doesn't work if it can't be fixed -> maybe try minimized mode?
+- [ ] Add headless mode -> print out progress updates
 
 ## Installation
 
