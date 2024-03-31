@@ -13,7 +13,7 @@ A Python tool for scraping multiple shopping websites such as Grailed, Depop, GO
 
 ## Introduction
 
-This project aims to provide a convenient and unified interface for scraping product listings and related data from various online shopping platforms.
+This project aims to provide a convenient interface to scraping product listings and related data from various online shopping platforms.
 
 This originated from my AP Computer Science Principles project which was just a Grailed scraper, and I wished to expand it to more sites so I created this.
 The original is [here](https://github.com/peppapig450/final-create-task-scraping).
@@ -27,20 +27,23 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [X] Implement Depop data extraction and scraping.
 
-- [ ] Implement Stockx data extraction and scraping.
-
 - [X] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
+
+- [ ] Implement Stockx data extraction and scraping.
 
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
 
 - [ ] Options to filter the dataframe by a category
-    - [ ] Process the outputted files and filter
 
-- [ ] Add headless mode -> print out progress updates
+- [ ] Process the outputted files and filter or maybe display visually
+
+- [ ] Add headless mode andn Print progress updates to stdout
+
+- [ ] Keep poetry and requirements.txt synchronized
 
 ## Installation
 
-Install using [Poetry](https://python-poetry.org/) (recommended):
+Install using [Poetry](https://python-poetry.org/) __(recommended)__:
 
 ```bash
 # clone repository
@@ -53,14 +56,14 @@ cd FashionCrawler
 poetry install
 ```
 
-Install using a virtual environment
+Install using a virtual environment:
 
 ```bash
 # clone repository
 git clone https://github.com/peppapig450/FashionCrawler
 
 # switch to directory
-cd fashioncrawler
+cd FashionCrawler
 
 # setup and activate virtual environment
 python3 -m venv venv && source venv/bin/activate
@@ -70,7 +73,7 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Fashion Crawler is a web scraper for various fashion marketplace sites. Below are the available options for running the scraper.
+Below are the available options for running the scraper.
 
 ### Options:
 
