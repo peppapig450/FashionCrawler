@@ -47,7 +47,22 @@ class GrailedDataExtractor(BaseDataExtractor):
         driver: Selenium WebDriver instance for interacting with the web pages.
     """
 
+    def __init__(self, driver):
+        self.driver = driver
+
+    def get_page_soup(self, driver):
+        """
+        Gets the BeautifulSoup instance of the current page source.
+
+        Returns:
+            BeautifulSoup instance of the current page source.
+        """
+        parser = etree.HTMLParser
+        return BeautifulSoup(driver.page_source, "lxml", parser=parser)
+
     def extract_data_to_dataframe(self):
+        self.soup = self.get_page_soup(self.driver)
+
         data_extraction_functions = {
             "Posted Time": self.extract_item_post_times,
             "Title": self.extract_item_titles,
@@ -56,7 +71,14 @@ class GrailedDataExtractor(BaseDataExtractor):
             "Price": self.extract_item_prices,
             "Listing Link": self.extract_item_listing_link,
         }
-        return super().extract_data_to_dataframe(data_extraction_functions)
+
+        extracted_data = {}
+        for column, func in data_extraction_functions.items():
+            extracted_data[column] = func()
+
+        df = pd.DataFrame.from_dict(extracted_data, orient="index")
+
+        return df
 
     def extract_item_post_times(self):
         """
@@ -71,7 +93,6 @@ class GrailedDataExtractor(BaseDataExtractor):
                 select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
         )
-        print("Extracted item post times: ", extracted_item_post_times)
         return extracted_item_post_times
 
     def extract_item_titles(self):
@@ -87,7 +108,6 @@ class GrailedDataExtractor(BaseDataExtractor):
                 select(".ListingMetadata-module__title___Rsj55", self.soup),
             )
         )
-        print("Extracted item titles: ", extracted_item_titles)
         return extracted_item_titles
 
     def extract_item_designers(self):
@@ -106,7 +126,6 @@ class GrailedDataExtractor(BaseDataExtractor):
                 ),
             )
         )
-        print("Extracted item designers:", extracted_item_designers)
         return extracted_item_designers
 
     def extract_item_sizes(self):
@@ -122,7 +141,6 @@ class GrailedDataExtractor(BaseDataExtractor):
                 select(".ListingMetadata-module__size___e9naE", self.soup),
             )
         )
-        print("Extracted item sizes:", extracted_item_sizes)
         return extracted_item_sizes
 
     def extract_item_prices(self):
@@ -135,7 +153,6 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_prices = list(
             map(lambda price: price.text, select('[data-testid="Current"]', self.soup))
         )
-        print("Extracted item prices:", extracted_item_prices)
         return extracted_item_prices
 
     def extract_item_listing_link(self):
@@ -151,7 +168,6 @@ class GrailedDataExtractor(BaseDataExtractor):
                 select("a.listing-item-link", self.soup),
             )
         )
-        print("Extracted item listing links:", extracted_item_listing_links)
         return extracted_item_listing_links
 
 
