@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "fashioncrawler"
+name = "FashionCrawler"
 version = "0.1.0"
 description = "FashionCrawler is a versatile Python tool designed for scraping data from various online shopping platforms including Grailed, Depop, and more."
-authors = ["Nick <nbgenius1@gmail.com>"]
+authors = ["Nick Brady <normalcitizen24@proton.me> <nbgenius1@gmail.com>"]
 readme = "README.md"
 package-mode = false
 
@@ -42,3 +42,7 @@ wsproto = "^1.2.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.license]
+name = "Apache-2.0"
+url = "http://www.apache.org/licenses/LICENSE-2.0"a

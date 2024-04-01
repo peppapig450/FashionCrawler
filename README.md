@@ -100,3 +100,7 @@ To enable only Grailed and Depop sites, search for "Nike Air Force", and output 
 ```bash
 poetry run python main.py --enable-site Grailed,Depop --search "Nike Air Force" -j -o output --output-dir data
 ```
+
+## License
+
+[Apache License 2.0](LICENSE)
