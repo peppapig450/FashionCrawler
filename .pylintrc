@@ -5,4 +5,5 @@ jobs=1  # >1 hides results
 [MESSAGES CONTROL]
 disable=line-too-long,
         super-init-not-called,
-        c-extension-no-member
+        c-extension-no-member,
+        arguments-differ
