@@ -5,6 +5,7 @@ description = "FashionCrawler is a versatile Python tool designed for scraping d
 authors = ["Nick Brady <normalcitizen24@proton.me> <nbgenius1@gmail.com>"]
 readme = "README.md"
 package-mode = false
+license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "3.11.8"
@@ -42,7 +43,3 @@ wsproto = "^1.2.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.license]
-name = "Apache-2.0"
-url = "http://www.apache.org/licenses/LICENSE-2.0"a
