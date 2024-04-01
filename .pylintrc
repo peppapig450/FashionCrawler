@@ -3,5 +3,6 @@ persistent=no
 jobs=1  # >1 hides results
 
 [MESSAGES CONTROL]
-disable=bad-whitespace,
-        line-too-long
+disable=line-too-long,
+        super-init-not-called,
+        c-extension-no-member
