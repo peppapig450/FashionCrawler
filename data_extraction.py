@@ -24,12 +24,32 @@ from soupsieve import select
 
 
 class BaseDataExtractor:
+    """
+    Base class for extracting data from web pages and storing it in a Pandas DataFrame.
+
+    Attributes:
+    - driver: WebDriver instance used for scraping.
+    - page_source: HTML source of the web page.
+    - soup: BeautifulSoup object representing the parsed HTML of the web page.
+
+    Methods:
+    - __init__(self, driver): Initializes the BaseDataExtractor with the WebDriver instance.
+    - get_page_soup(self): Parses the page source and returns a BeautifulSoup object.
+    - extract_data_to_dataframe(self, data_extraction_functions): Abstract method to extract data from the web page and store it in a Pandas DataFrame.
+    """
+
     def __init__(self, driver):
         self.driver = driver
         self.page_source = driver.page_source
         self.soup = self.get_page_soup()
 
     def get_page_soup(self):
+        """
+        Parse the HTML page source and return a BeautifulSoup object.
+
+        Returns:
+            - soup: BeautifulSoup object representing the parsed HTML of the web page.
+        """
         parser = etree.HTMLParser()
         return BeautifulSoup(self.page_source, "lxml", parser=parser)
 
@@ -54,12 +74,20 @@ class BaseDataExtractor:
 
 class GrailedDataExtractor(BaseDataExtractor):
     """
-    Class for extracting data from Grailed.
+    GrailedDataExtractor class for extracting data from Grailed listings.
 
     Inherits from BaseDataExtractor.
 
-    Attributes:
-        driver: Selenium WebDriver instance for interacting with the web pages.
+    Methods:
+        - __init__(driver): Constructor method.
+        - get_page_soup(driver): Retrieves BeautifulSoup instance of the current page source.
+        - extract_data_to_dataframe(): Extracts data from the page and stores it in a Pandas DataFrame.
+        - extract_item_post_times(): Extracts the post times of items from the BeautifulSoup object.
+        - extract_item_titles(): Extracts the titles of items from the BeautifulSoup object.
+        - extract_item_designers(): Extracts the designers of items from the BeautifulSoup object.
+        - extract_item_sizes(): Extracts the sizes of items from the BeautifulSoup object.
+        - extract_item_prices(): Extracts the prices of items from the BeautifulSoup object.
+        - extract_item_listing_link(): Extracts the listing links of items from the BeautifulSoup object.
     """
 
     def __init__(self, driver):
@@ -194,6 +222,21 @@ class DepopDataExtractor(BaseDataExtractor):
 
     Attributes:
         driver: Selenium WebDriver instance for interacting with the web pages.
+
+    Methods:
+        - __init__(driver): Initializes a DepopDataExtractor object.
+        - get_page_soup(): Gets the BeautifulSoup instance of the current page source.
+        - extract_data_to_dataframe(): Extracts data from item links and returns a DataFrame.
+        - get_item_links(): Retrieves a list of item links from the current page.
+        - extract_data_from_item_links(links): Extracts data from a list of item links.
+        - extract_data(url): Extracts data from a single item page.
+        - extract_item_title(): Extracts the title of the item.
+        - extract_item_price(): Extracts the price of the item.
+        - extract_item_seller(): Extracts the seller of the item.
+        - extract_item_description(): Extracts the description of the item.
+        - extract_item_condition(): Extracts the condition of the item.
+        - extract_item_size(): Extracts the size of the item.
+        - extract_item_time_posted(): Extracts the time when the item was listed.
     """
 
     def __init__(self, driver):
@@ -225,7 +268,7 @@ class DepopDataExtractor(BaseDataExtractor):
         data is returned as a DataFrame.
 
         Returns:
-        - pd.DataFrame: Extracted data as a DataFrame.
+        - pandas.DataFrame: Extracted data as a DataFrame.
 
         Example:
             extractor = DepopDataExtractor(driver)
