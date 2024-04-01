@@ -80,6 +80,14 @@ class IOUtils:
 
         output_group.add_argument("--output-dir", help="Output directory", type=str)
 
+        # Driver options
+        driver_group = parser.add_argument_group("Driver options")
+        driver_group.add_argument(
+            "--headless",
+            help="Run WebDriver in headless mode (WIP)",
+            action="store_true",
+        )
+
         args = parser.parse_args()
 
         # Load configuration from YAML file
@@ -195,6 +203,7 @@ class IOUtils:
         """
         config["search_query"] = args.search
         config["output_format"] = IOUtils._get_output_format(args)
+        config["headless"] = args.headless
 
         if args.output_dir:
             config["output_directory"] = args.output_dir

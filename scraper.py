@@ -34,9 +34,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class BaseScraper:
-    def __init__(self):
+    def __init__(self, config):
         try:
-            options = self.configure_driver_options()
+            self.config = config
+            options = self.configure_driver_options(config)
             self.driver = self.get_chrome_driver(options)
         except Exception as e:
             print(f"An error occurred while initializing the ChromeDriver: {e}")
@@ -57,7 +58,7 @@ class BaseScraper:
                 EC.element_to_be_clickable((By.CSS_SELECTOR, cookie_css_selector))
             )
             ActionChains(self.driver).double_click(cookies_button).perform()
-        except TimeoutException as e:
+        except TimeoutException:
             # print("Timeout occured while accepting cookies.")
             pass
 
@@ -138,7 +139,6 @@ class BaseScraper:
         Returns:
         - None
         """
-        pass
 
     def navigate_to_search_bar(
         self, base_url: str, search_bar_css_selector: str
@@ -180,7 +180,7 @@ class BaseScraper:
             print(
                 f"Number of elements matching class '{class_name}' exceeded {min_count}."
             )
-        except TimeoutException as e:
+        except TimeoutException:
             print(
                 f"Timeout occurred while waiting for class count to exceed {min_count}."
             )
@@ -201,7 +201,7 @@ class BaseScraper:
         )
 
     @staticmethod
-    def configure_driver_options():
+    def configure_driver_options(config):
         """
         Configure the options for the Chrome WebDriver.
 
@@ -214,6 +214,10 @@ class BaseScraper:
             options.add_argument("--log-level=3")
 
         options.add_argument("--disable-blink-features=AutomationControlled")
+
+        if config["headless"]:
+            options.add_argument("--headless=new")
+
         return options
 
     def wait_for_page_load(self, class_name: str, min_count: int) -> None:
@@ -237,7 +241,6 @@ class BaseScraper:
         Args:
             search_query (str): The search query to be used for scraping.
         """
-        pass
 
 
 class GrailedScraper(BaseScraper):
@@ -334,7 +337,6 @@ class GrailedScraper(BaseScraper):
         - None
         """
 
-        # TODO: dont modularize this for now it's slower for some reason
         try:
             login_popup = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(
@@ -408,7 +410,6 @@ class DepopScraper(BaseScraper):
 
         Args:
         - search_icon_css_seelctor: The magnifying glass you must click to get to search bar on depop.
-        - search_bar_css_selector: The CSS selector for the search bar.
         - timeout: The maximum time to wait for elements to be interactable.
 
         Returns:

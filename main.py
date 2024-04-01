@@ -41,7 +41,7 @@ def main():
     config = IOUtils.parse_args()
     search_query = config.get("search_query", "")
 
-    base_scraper = BaseScraper()
+    base_scraper = BaseScraper(config)
 
     scrapers = {
         "depop": (DepopScraper(base_scraper), DepopDataExtractor),
