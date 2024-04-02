@@ -40,6 +40,13 @@ urllib3 = "^2.2.1"
 webdriver-manager = "^4.0.1"
 wsproto = "^1.2.0"
 
+[tool.poetry.group.dev.dependencies]
+poetry = "^1.8.2"
+
+[tools.poetry.group.dev.dependencies]
+optional = true
+poetry = "^1.8.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
