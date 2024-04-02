@@ -162,4 +162,4 @@ output/
 logs/
 
 logger.py
-dev/**
+dev/charts/
