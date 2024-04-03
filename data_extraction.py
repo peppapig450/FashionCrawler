@@ -379,10 +379,8 @@ class DepopDataExtractor(BaseDataExtractor):
         )
 
         for price_element in price_elements:
-
             if price_element.get("aria-label") == "Full price":
                 return [price_element.text.strip()]
-
             elif price_element.get("aria-label") == "Discount price":
                 return [price_element.text.strip()]
 
