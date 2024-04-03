@@ -370,22 +370,21 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the price of the item.
         """
-        price_elements = sv.select(
-            ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
-            self.soup,
-        )
         prices = []
 
-        for price_element in price_elements:
-            aria_label = price_element.get("aria-label", "")
-            price_text = price_element.text.strip()
+        # select both the discount and full prices if they exist using pseudo-class
+        price_elements = sv.select(
+            'div.ProductDetailsSticky-styles__StyledProductPrice-sc-17bd7b59-4.qJnzl > div > p:is([aria-label="Full price"], [aria-label="Discounted price"]',
+            self.soup,
+        )
 
-            if "Discounted price" == aria_label:
-                prices.clear()
-                prices.append(price_text)
-                break
-            else:
-                prices.append(price_text)
+        for price_element in price_elements:
+
+            if price_element.get("aria-label") == "Full price":
+                return [price_element.text.strip()]
+
+            elif price_element.get("aria-label") == "Discount price":
+                return [price_element.text.strip()]
 
         return prices
 
