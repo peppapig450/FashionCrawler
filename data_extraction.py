@@ -444,7 +444,8 @@ class DepopDataExtractor(BaseDataExtractor):
             List containing the size of the item.
         """
         attribute_elements = sv.select(
-            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
+            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO > p",
+            self.soup,
         )
         size = []
 
@@ -461,9 +462,8 @@ class DepopDataExtractor(BaseDataExtractor):
             List containing the time of when the item was listed.
         """
         return list(
-            time_posted.text.replace("Listed", "").strip()
-            for time_posted in sv.select(
-                "time.sc-eDnWTT.styles__Time-sc-630c0aef-0.gpa-dDQ.bgyRJa.styles__StyledPostTime-sc-2b987745-4.fofwdp",
-                self.soup,
+            map(
+                lambda time_posted: time_posted.text.replace("Listed", "").strip(),
+                sv.select("time[datetime]", self.soup),
             )
         )
