@@ -20,7 +20,7 @@ from typing import List
 import pandas as pd
 from bs4 import BeautifulSoup
 from lxml import etree
-from soupsieve import select
+import soupsieve as sv
 
 
 class BaseDataExtractor:
@@ -133,7 +133,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_post_times = list(
             map(
                 lambda time: time.text.split("\xa0ago")[0],
-                select(".ListingAge-module__dateAgo___xmM8y", self.soup),
+                sv.select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
         )
         return extracted_item_post_times
@@ -148,7 +148,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_titles = list(
             map(
                 lambda title: title.text,
-                select(".ListingMetadata-module__title___Rsj55", self.soup),
+                sv.select(".ListingMetadata-module__title___Rsj55", self.soup),
             )
         )
         return extracted_item_titles
@@ -163,7 +163,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_designers = list(
             map(
                 lambda designer: designer.text,
-                select(
+                sv.select(
                     "div.ListingMetadata-module__designerAndSize___lbEdw > p:first-child",
                     self.soup,
                 ),
@@ -181,7 +181,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_sizes = list(
             map(
                 lambda size: size.text,
-                select(".ListingMetadata-module__size___e9naE", self.soup),
+                sv.select(".ListingMetadata-module__size___e9naE", self.soup),
             )
         )
         return extracted_item_sizes
@@ -194,7 +194,10 @@ class GrailedDataExtractor(BaseDataExtractor):
         - A list of item prices.
         """
         extracted_item_prices = list(
-            map(lambda price: price.text, select('[data-testid="Current"]', self.soup))
+            map(
+                lambda price: price.text,
+                sv.select('[data-testid="Current"]', self.soup),
+            )
         )
         return extracted_item_prices
 
@@ -208,7 +211,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         extracted_item_listing_links = list(
             map(
                 lambda listing_link: f"https://grailed.com{listing_link.get('href')}",
-                select("a.listing-item-link", self.soup),
+                sv.select("a.listing-item-link", self.soup),
             )
         )
         return extracted_item_listing_links
@@ -290,7 +293,7 @@ class DepopDataExtractor(BaseDataExtractor):
         links = list(
             map(
                 lambda item_link: f"https://depop.com{item_link.get('href')}",
-                select(".styles__ProductCard-sc-4aad5806-4.ffvUlI", soup),
+                sv.select(".styles__ProductCard-sc-4aad5806-4.ffvUlI", soup),
             )
         )[:40]
 
@@ -354,8 +357,8 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         return list(
             title.text.strip()
-            for title in select(
-                ".ProductDetailsSticky-styles__DesktopKeyProductInfo-sc-81fc4a15-9.epoVmq  h1",
+            for title in sv.select(
+                "div.ProductDetailsSticky-styles__DesktopKeyProductInfo-sc-17bd7b59-9.bKazye > h1",
                 self.soup,
             )
         )
@@ -367,7 +370,7 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the price of the item.
         """
-        price_elements = select(
+        price_elements = sv.select(
             ".ProductDetailsSticky-styles__StyledProductPrice-sc-81fc4a15-4.dVAZDx  div  p",
             self.soup,
         )
@@ -393,7 +396,7 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the seller of the item.
         """
-        seller_element = select(
+        seller_element = sv.select(
             "a.sc-eDnWTT.styles__Username-sc-f040d783-3.fRxqiS.WZqly", self.soup
         )
         if seller_element:
@@ -410,8 +413,8 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         return list(
             description.text.strip()
-            for description in select(
-                ".styles__Container-sc-d367c36f-0.ffwMQV  p",
+            for description in sv.select(
+                ".styles__Container-sc-d367c36f-0.ffwMQV > p",
                 self.soup,
             )
         )
@@ -423,8 +426,9 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the condition(s) of the item.
         """
-        attribute_elements = select(
-            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
+        attribute_elements = sv.select(
+            "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO > p",
+            self.soup,
         )
         conditions = []
 
@@ -442,7 +446,7 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the size of the item.
         """
-        attribute_elements = select(
+        attribute_elements = sv.select(
             "div.ProductAttributes-styles__Attributes-sc-303d66c3-1.dIfGXO p", self.soup
         )
         size = []
@@ -461,7 +465,7 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         return list(
             time_posted.text.replace("Listed", "").strip()
-            for time_posted in select(
+            for time_posted in sv.select(
                 "time.sc-eDnWTT.styles__Time-sc-630c0aef-0.gpa-dDQ.bgyRJa.styles__StyledPostTime-sc-2b987745-4.fofwdp",
                 self.soup,
             )
