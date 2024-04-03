@@ -1,5 +1,4 @@
 {
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoImportCompletions": false,
-    "pylint.args": ["--rcfile=/Users/nick/Projects/Programming/Python/scraping/FashionCrawler/.pylintrc"]
 }
