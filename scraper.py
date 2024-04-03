@@ -473,6 +473,7 @@ class DepopScraper(BaseScraper):
         self._navigate_and_search(search_query)
         super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
 
+    # TODO: Check if this needed
     def get_to_search_bar_to_search(
         self,
         search_icon_css_selector: str,
@@ -573,13 +574,28 @@ class StockxScraper(BaseScraper):
     Subclass of BaseScraper for scraping data from the StockX website.
     """
 
+    SEARCH_BAR_CSS_SELECTOR = "#site-search"
+
+    BASE_URL = "https://stockx.com"
+
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
 
     def get_to_search_bar_to_search(
-        self, search_bar_css_selector: str, timeout=2
+        self, search_bar_css_selector: str, timeout=4
     ) -> None:
-        pass
+        try:
+            search_bar = WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, self.SEARCH_BAR_CSS_SELECTOR)
+                )
+            )
+        except:
+            pass
+            # TODO: Left off here
 
     def run_scraper(self, search_query):
+        pass
+
+    def type_search(self, search):
         pass
