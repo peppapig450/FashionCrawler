@@ -12,7 +12,7 @@ def parse_packages_from_poetry(poetry_lock_file: Path):
         for package in parsed_toml["package"]:  # type: ignore
             package_name = package["name"]
             package_version = package["version"]
-            packages.append((f"{package_name}=={package_version}"))
+            packages.append((f"{package_name}=={package_version}\n"))
 
     return packages
 
