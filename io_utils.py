@@ -240,7 +240,7 @@ class IOUtils:
 
         output_directory = config.get("output_directory", "")
 
-        output_filename.replace(" ", "_")
+        output_filename = output_filename.replace(" ", "_")
         if output_directory:
             os.makedirs(output_directory, exist_ok=True)
             output_filename = os.path.join(output_directory, output_filename)
