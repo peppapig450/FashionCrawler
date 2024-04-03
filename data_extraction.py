@@ -374,7 +374,7 @@ class DepopDataExtractor(BaseDataExtractor):
 
         # select both the discount and full prices if they exist using pseudo-class
         price_elements = sv.select(
-            'div.ProductDetailsSticky-styles__StyledProductPrice-sc-17bd7b59-4.qJnzl > div > p:is([aria-label="Full price"], [aria-label="Discounted price"]',
+            'div.ProductDetailsSticky-styles__StyledProductPrice-sc-17bd7b59-4.qJnzl > div > p:is([aria-label="Full price"], [aria-label="Discounted price"])',
             self.soup,
         )
 
