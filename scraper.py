@@ -153,14 +153,23 @@ class BaseScraper:
         Returns:
         - None
         """
-        search_bar = self.driver.find_element(By.CSS_SELECTOR, search_bar_css_selector)
-        submit_button = self.driver.find_element(
-            By.CSS_SELECTOR, submit_button_css_selector
-        )
 
-        ActionChains(self.driver).click(search_bar).send_keys(search).pause(
-            1
-        ).send_keys(Keys.ENTER).perform()
+        try:
+            search_bar = WebDriverWait(self.driver, 3).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
+            )
+
+            ActionChains(self.driver).send_keys_to_element(
+                search_bar, search
+            ).send_keys(Keys.ENTER).perform()
+
+        except (
+            NoSuchElementException,
+            StaleElementReferenceException,
+            TimeoutException,
+        ) as e:
+            print(f"Something went wrong searching on grailed.{e}")
+            traceback.format_exc()
 
     @abstractmethod
     def get_to_search_bar_to_search(
@@ -304,7 +313,7 @@ class GrailedScraper(BaseScraper):
     # Selectors for various elements
     LOGIN_POPUP_SELECTOR = ".ReactModal__Content.ReactModal__Content--after-open.modal.Modal-module__authenticationModal___g7Ufu._hasHeader"
     SEARCH_BAR_CSS_SELECTOR = "#header_search-input"
-    SEARCH_BAR_SUBMIT_CSS_SELECTOR = "button[title='Submit']"
+    SEARCH_BAR_SUBMIT_CSS_SELECTOR = ".Button-module__button___fE9iu.Button-module__small___uF0cg.Button-module__secondary___gYP5i.Form-module__searchButton___WDphC"
     COOKIES_CSS_SELECTOR = "#onetrust-accept-btn-handler"
 
     BASE_URL = "https://grailed.com"
