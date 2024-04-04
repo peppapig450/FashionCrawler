@@ -18,9 +18,9 @@ from abc import abstractmethod
 from typing import List
 
 import pandas as pd
+import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
-import soupsieve as sv
 
 
 class BaseDataExtractor:
@@ -374,15 +374,17 @@ class DepopDataExtractor(BaseDataExtractor):
 
         # select both the discount and full prices if they exist using pseudo-class
         price_elements = sv.select(
-            'div.ProductDetailsSticky-styles__StyledProductPrice-sc-17bd7b59-4.qJnzl > div > p:is([aria-label="Full price"], [aria-label="Discounted price"])',
+            'div.ProductDetailsSticky-styles__StyledProductPrice-sc-17bd7b59-4.qJnzl > div > p:is([aria-label="Full price"], [aria-label="Discounted price"], [aria-label="Price"])',
             self.soup,
         )
 
         for price_element in price_elements:
-            if price_element.get("aria-label") == "Full price":
-                return [price_element.text.strip()]
-            elif price_element.get("aria-label") == "Discount price":
-                return [price_element.text.strip()]
+            if price_element.get("aria-label") in ("Full price", "Price"):
+                prices.append(price_element.text.strip())
+                return prices
+            elif price_element.get("aria-label") == "Discounted price":
+                prices.append(price_element.text.strip())
+                return prices
 
         return prices
 
