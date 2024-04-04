@@ -54,7 +54,7 @@ class BaseScraper:
         Navigate to the search bar and interact with it to initiate a search.
     - navigate_to_search_bar(self, base_url: str, search_bar_css_selector: str) -> None:
         Navigate to the search bar of the website.
-    - wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=10) -> None:
+    - wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=5) -> None:
         Wait until the number of elements matching the specified class exceeds a minimum count.
     - get_chrome_driver(options):
         Initialize and return a Chrome WebDriver instance with specified options.
@@ -189,7 +189,7 @@ class BaseScraper:
         self.get_to_search_bar_to_search(search_bar_css_selector)
 
     def wait_until_class_count_exceeds(
-        self, class_name: str, min_count: int, timeout=10
+        self, class_name: str, min_count: int, timeout=5
     ) -> None:
         """
         Wait until the number of elements matching the specified class exceeds a minimum count.

@@ -313,7 +313,7 @@ class DepopDataExtractor(BaseDataExtractor):
 
         for link in links:
             self.driver.get(link)
-            time.sleep(1)
+            time.sleep(0.5)
 
             self.soup = self.get_page_soup()
             data = self.extract_data(self.driver.current_url)
