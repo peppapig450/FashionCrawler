@@ -589,7 +589,7 @@ class DepopScraper(BaseScraper):
 
         logger = DepopScraper.logger
 
-        max_workers = 3
+        max_workers = 5
         backoff_delay = 2  # Initial backoff delay in seconds
         max_retries = 3
 
