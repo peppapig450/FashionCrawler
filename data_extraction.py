@@ -13,8 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-import sys
-import time
 from abc import abstractmethod
 from typing import List
 
@@ -255,7 +253,7 @@ class DepopDataExtractor(BaseDataExtractor):
         self.driver = driver
 
     # get the soup instance we're gonna use to scrape the links off of
-    def get_page_soup(self):
+    def get_page_soup(self, page_source=None):
         """
         Gets the BeautifulSoup instance of the current page source.
 
@@ -263,7 +261,11 @@ class DepopDataExtractor(BaseDataExtractor):
             BeautifulSoup instance of the current page source.
         """
         parser = etree.HTMLParser
-        return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
+
+        if page_source:
+            return BeautifulSoup(page_source, "lxml", parser=parser)
+        else:
+            return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
     def extract_data_to_dataframe(self):
         """
@@ -321,11 +323,10 @@ class DepopDataExtractor(BaseDataExtractor):
         # return pd.DataFrame(all_data)
         for url, source in page_sources.items():
             if source:
-                print(f"{url} has page source extracted")
-            if not source:
-                print(f"Something went wrong with {url}")
+                item_data = self.extract_data(source, url)
+                all_data.append(item_data)
 
-        sys.exit()
+        return pd.DataFrame(all_data)
 
     def extract_data(self, page_source, url):
         """
@@ -337,6 +338,8 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             Dictionary containing extracted data from the item page.
         """
+        self.soup = self.get_page_soup(page_source)
+
         data_extraction_functions = {
             "Title": self.extract_item_title,
             "Price": self.extract_item_price,
