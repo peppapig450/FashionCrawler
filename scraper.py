@@ -536,6 +536,7 @@ class DepopScraper(BaseScraper):
                     (By.CSS_SELECTOR, submit_button_css_selector)
                 )
             )
+            submit_button.click()
         except TimeoutException:
             try:
                 submit_button = WebDriverWait(self.driver, 2).until(
@@ -543,12 +544,11 @@ class DepopScraper(BaseScraper):
                         (By.CSS_SELECTOR, self.BACKUP_SUBMIT_BUTTON_SELECTOR)
                     )
                 )
-            except TimeoutException:
+                submit_button.click()
+            except TimeoutException as exe:
                 raise NoSuchElementException(
                     "Both primary and backup submit button selectors not found"
-                )
-
-        submit_button.click()
+                ) from exe
 
     def _navigate_and_search(self, search_query: str) -> None:
         """
