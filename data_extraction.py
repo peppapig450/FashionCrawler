@@ -13,7 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-import sys
 import time
 from abc import abstractmethod
 from typing import List
@@ -22,8 +21,6 @@ import pandas as pd
 import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
-
-from scraper import DepopScraper
 
 
 class BaseDataExtractor:
@@ -314,20 +311,17 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         all_data = []
 
-        page_sources = {}
+        for link in links:
+            self.driver.get(link)
+            time.sleep(1)
 
-        page_sources = DepopScraper.get_page_sources_concurrently(links)
+            self.soup = self.get_page_soup()
+            data = self.extract_data(self.driver.current_url)
+            all_data.append(data)
 
-        # return pd.DataFrame(all_data)
-        for url, source in page_sources.items():
-            if source:
-                print(f"{url} has page source extracted")
-            if not source:
-                print(f"Something went wrong with {url}")
+        return pd.DataFrame(all_data)
 
-        sys.exit()
-
-    def extract_data(self, page_source, url):
+    def extract_data(self, url):
         """
         Extracts data from a single item page.
 
