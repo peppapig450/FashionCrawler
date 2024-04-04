@@ -13,8 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 
-import sys
 import logging
+import sys
 import threading
 import time
 import traceback
@@ -23,10 +23,10 @@ from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
 from selenium import webdriver
 from selenium.common.exceptions import (
-    WebDriverException,
-    TimeoutException,
     NoSuchElementException,
     StaleElementReferenceException,
+    TimeoutException,
+    WebDriverException,
 )
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
@@ -58,7 +58,7 @@ class BaseScraper:
         Navigate to the search bar and interact with it to initiate a search.
     - navigate_to_search_bar(self, base_url: str, search_bar_css_selector: str) -> None:
         Navigate to the search bar of the website.
-    - wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=10) -> None:
+    - wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=5) -> None:
         Wait until the number of elements matching the specified class exceeds a minimum count.
     - get_chrome_driver(options):
         Initialize and return a Chrome WebDriver instance with specified options.
@@ -75,7 +75,6 @@ class BaseScraper:
             self.config = config
             options = self.configure_driver_options(config)
             self.driver = self.get_chrome_driver(options)
-
         except Exception as e:
             print(f"An error occurred while initializing the ChromeDriver: {e}")
             raise
@@ -158,9 +157,9 @@ class BaseScraper:
             By.CSS_SELECTOR, submit_button_css_selector
         )
 
-        ActionChains(self.driver).click(search_bar).send_keys(search).click(
-            submit_button
-        ).perform()
+        ActionChains(self.driver).click(search_bar).send_keys(search).pause(
+            1
+        ).send_keys(Keys.ENTER).perform()
 
     @abstractmethod
     def get_to_search_bar_to_search(
@@ -270,7 +269,7 @@ class BaseScraper:
         """
         self.wait_until_class_count_exceeds(class_name, min_count)
 
-    @abstractmethod  # type: ignore
+    @abstractmethod
     def run_scraper(self, search_query):
         """
         Abstract method to run the scraper for a given search query.
@@ -462,7 +461,6 @@ class DepopScraper(BaseScraper):
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
 
-    # Define logger at the class level
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler("logs/scraper.log")
@@ -592,7 +590,6 @@ class DepopScraper(BaseScraper):
         logger = DepopScraper.logger
 
         max_workers = 3
-        delay_between_tasks = 1  # Delay between submitting tasks
         backoff_delay = 2  # Initial backoff delay in seconds
         max_retries = 3
 
@@ -620,17 +617,18 @@ class DepopScraper(BaseScraper):
                         logger.debug(traceback.format_exc())
                     except Exception as e:
                         logger.error(
-                            f"Error fetching page source for {future.result()}: {e}"
+                            "Error fetching page source for %s: %s", future.result(), e
                         )
                         logger.debug(traceback.format_exc())
-                    finally:
-                        for f in futures:
-                            f.cancel()
+                        future.cancel()
             except KeyboardInterrupt:
                 # Handle keyboard interrupt at the outer level
                 print(
                     "KeyboardInterrupt: Cancelling remaining tasks and quitting WebDriver..."
                 )
+                for f in futures:
+                    f.cancel()
+            finally:
                 for f in futures:
                     f.cancel()
         return page_sources
@@ -649,7 +647,7 @@ class DepopScraper(BaseScraper):
 
                 cookies_button = WebDriverWait(driver, 2).until(
                     EC.element_to_be_clickable(
-                        (By.CSS_SELECTOR, "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu")
+                        (By.CSS_SELECTOR, DepopScraper.COOKIE_CSS_SELECTOR)
                     )
                 )
                 ActionChains(driver).double_click(cookies_button).perform()
