@@ -17,9 +17,9 @@ import logging
 import sys
 import threading
 import time
+
 import traceback
 from abc import abstractmethod
-from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -469,6 +469,7 @@ class DepopScraper(BaseScraper):
     )
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
 
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
