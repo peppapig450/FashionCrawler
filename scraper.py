@@ -194,7 +194,7 @@ class BaseScraper:
         self.get_to_search_bar_to_search(search_bar_css_selector)
 
     def wait_until_class_count_exceeds(
-        self, class_name: str, min_count: int, timeout=5
+        self, class_name: str, min_count: int, timeout=10
     ) -> None:
         """
         Wait until the number of elements matching the specified class exceeds a minimum count.
