@@ -42,6 +42,7 @@ wsproto = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 tomlkit = "^0.12.4"
+snakeviz = "^2.2.0"
 
 [build-system]
 requires = ["poetry-core"]

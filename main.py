@@ -17,6 +17,7 @@
 from data_extraction import DepopDataExtractor, GrailedDataExtractor
 from io_utils import IOUtils
 from scraper import DepopScraper, GrailedScraper, BaseScraper
+import cProfile
 
 
 def run_scraper(scraper, extractor, search_query):
@@ -67,4 +68,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    cProfile.run("main()", filename="profile_results.txt")

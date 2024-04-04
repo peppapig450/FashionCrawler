@@ -14,15 +14,19 @@
 # ==============================================================================
 
 import sys
-
+import logging
+import threading
+import time
 import traceback
 from abc import abstractmethod
+from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
 from selenium import webdriver
 from selenium.common.exceptions import (
+    WebDriverException,
+    TimeoutException,
     NoSuchElementException,
     StaleElementReferenceException,
-    TimeoutException,
 )
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
@@ -71,6 +75,7 @@ class BaseScraper:
             self.config = config
             options = self.configure_driver_options(config)
             self.driver = self.get_chrome_driver(options)
+
         except Exception as e:
             print(f"An error occurred while initializing the ChromeDriver: {e}")
             raise
@@ -265,7 +270,7 @@ class BaseScraper:
         """
         self.wait_until_class_count_exceeds(class_name, min_count)
 
-    @abstractmethod
+    @abstractmethod  # type: ignore
     def run_scraper(self, search_query):
         """
         Abstract method to run the scraper for a given search query.
@@ -457,6 +462,16 @@ class DepopScraper(BaseScraper):
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
 
+    # Define logger at the class level
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler("logs/scraper.log")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
 
@@ -566,6 +581,89 @@ class DepopScraper(BaseScraper):
             self.SEARCH_BAR_SELECTOR,
             self.SUBMIT_BUTTON_SELECTOR,
         )
+
+    @staticmethod
+    def get_page_sources_concurrently(urls):
+        page_sources = {}
+        lock = threading.Lock()
+        options = Options()
+        options.add_argument("--log-level=3")
+
+        logger = DepopScraper.logger
+
+        max_workers = 3
+        delay_between_tasks = 1  # Delay between submitting tasks
+        backoff_delay = 2  # Initial backoff delay in seconds
+        max_retries = 3
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(
+                    DepopScraper._fetch_update_page_source,
+                    url,
+                    page_sources,
+                    lock,
+                    options,
+                    logger,
+                    max_retries,
+                    backoff_delay,
+                )
+                for url in urls
+            ]
+            try:
+                for future in as_completed(futures):
+                    try:
+                        future.result()
+                    except CancelledError:
+                        logger.error("Task canceled:")
+                        # Log the traceback for the CancelledError
+                        logger.debug(traceback.format_exc())
+                    except Exception as e:
+                        logger.error(
+                            f"Error fetching page source for {future.result()}: {e}"
+                        )
+                        logger.debug(traceback.format_exc())
+                    finally:
+                        for f in futures:
+                            f.cancel()
+            except KeyboardInterrupt:
+                # Handle keyboard interrupt at the outer level
+                print(
+                    "KeyboardInterrupt: Cancelling remaining tasks and quitting WebDriver..."
+                )
+                for f in futures:
+                    f.cancel()
+        return page_sources
+
+    @staticmethod
+    def _fetch_update_page_source(
+        url, page_sources, lock, options, logger, max_retries, backoff_delay
+    ):
+        retries = 0
+        while retries < max_retries:
+            driver = DepopScraper.get_chrome_driver(options)
+            # Catch various exceptions that might occur during navigation
+            logger.info(f"Trying to access page_source for url {url}")
+            try:
+                driver.get(url)
+
+                cookies_button = WebDriverWait(driver, 2).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, "button.sc-hjcAab.bpwLYJ.sc-gshygS.fFJfAu")
+                    )
+                )
+                ActionChains(driver).double_click(cookies_button).perform()
+
+                with lock:
+                    page_sources[url] = driver.page_source
+                break  # Break out of the retry loop if successful
+            except (WebDriverException, TimeoutException) as e:
+                logger.error(f"Error fetching page source for '{url}': {e}")
+                logger.debug(traceback.format_exc())
+                retries += 1
+                time.sleep(backoff_delay * retries)  # Increasing delay for retries
+            finally:
+                driver.quit()
 
 
 class StockxScraper(BaseScraper):
