@@ -20,6 +20,7 @@ import time
 
 import traceback
 from abc import abstractmethod
+from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -470,7 +471,6 @@ class DepopScraper(BaseScraper):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
 
@@ -583,6 +583,24 @@ class DepopScraper(BaseScraper):
 
     @staticmethod
     def get_page_sources_concurrently(urls):
+        """
+        Fetches page sources concurrently for a list of URLs using ThreadPoolExecutor.
+
+        Args:
+            urls (list): List of URLs for which to fetch page sources.
+
+        Returns:
+            dict: A dictionary where keys are URLs and values are the corresponding page sources.
+
+        This method fetches page sources for a list of URLs concurrently using ThreadPoolExecutor.
+        It handles potential errors during fetching, such as cancellations or exceptions, and
+        provides logging for debugging purposes.
+
+        Example:
+            urls = ['https://example.com/page1', 'https://example.com/page2']
+            page_sources = DepopScraper.get_page_sources_concurrently(urls)
+        """
+
         page_sources = {}
         lock = threading.Lock()
         options = Options()
@@ -636,8 +654,32 @@ class DepopScraper(BaseScraper):
 
     @staticmethod
     def _fetch_update_page_source(
-        url, page_sources, lock, options, logger, max_retries, backoff_delay
+        url: str,
+        page_sources,
+        lock: threading.Lock,
+        options: Options,
+        logger: logging.Logger,
+        max_retries: int,
+        backoff_delay: int,
     ):
+        """
+        Fetches and updates the page source for a given URL.
+
+        Args:
+            url (str): The URL for which to fetch the page source.
+            page_sources (dict): A dictionary to store the fetched page sources.
+            lock (threading.Lock): A lock to ensure thread-safe access to shared resources.
+            options (Options): Chrome options for configuring the WebDriver.
+            logger (logging.Logger): Logger instance for logging messages.
+            max_retries (int): Maximum number of retries in case of failure.
+            backoff_delay (int): Initial backoff delay in seconds.
+
+        This method fetches the page source for a given URL using a Chrome WebDriver.
+        It retries a maximum number of times (max_retries) in case of failure.
+        The backoff delay increases exponentially with each retry.
+        After successfully fetching the page source, it updates the page_sources dictionary with the URL and its corresponding page source.
+
+        """
         retries = 0
         while retries < max_retries:
             driver = DepopScraper.get_chrome_driver(options)

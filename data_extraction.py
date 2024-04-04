@@ -22,6 +22,8 @@ import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
 
+from scraper import DepopScraper
+
 
 class BaseDataExtractor:
     """
@@ -315,9 +317,8 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         all_data = []
 
-        for link in links:
-            self.driver.get(link)
-            time.sleep(0.5)
+        page_sources = {}
+        page_sources = DepopScraper.get_page_sources_concurrently(links)
 
         for url, source in page_sources.items():
             if source:
@@ -326,7 +327,7 @@ class DepopDataExtractor(BaseDataExtractor):
 
         return pd.DataFrame(all_data)
 
-    def extract_data(self, url):
+    def extract_data(self, page_source, url):
         """
         Extracts data from a single item page.
 
