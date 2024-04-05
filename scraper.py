@@ -14,13 +14,14 @@
 # ==============================================================================
 
 import logging
+import os
 import sys
 import threading
 import time
-
 import traceback
 from abc import abstractmethod
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
+from logging.handlers import TimedRotatingFileHandler
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -76,9 +77,48 @@ class BaseScraper:
             self.config = config
             options = self.configure_driver_options(config)
             self.driver = self.get_chrome_driver(options)
+            self.logger = self.get_logger()
         except Exception as e:
-            print(f"An error occurred while initializing the ChromeDriver: {e}")
+            self.logger.error(
+                f"An error occurred while initializing the ChromeDriver: {e}",
+                exc_info=True,
+            )
             raise
+
+    def get_logger(self) -> logging.Logger:
+        """
+        Retrieves a logger instance for the scraper.
+
+        This method configures a logger instance with a TimedRotatingFileHandler for log rotation.
+        Log files are rotated daily, and a specified number of backup log files are retained.
+        The logger is configured to log messages with DEBUG level and above.
+
+        Returns:
+            logger (logging.Logger): A logger instance configured with a TimedRotatingFileHandler.
+        """
+
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+
+        # Create logs directory if it doesn't exist
+        logs_dir = "logs"
+        os.makedirs(logs_dir, exist_ok=True)
+
+        # Create a TimedRotatingFileHandler for log rotation
+        log_file = os.path.join(logs_dir, "scraper.log")
+        handler = TimedRotatingFileHandler(
+            log_file, when="midnight", interval=1, backupCount=7
+        )  # Rotate daily, keep 7 days' worth of logs
+        handler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+
+        logger.addHandler(handler)
+
+        return logger
 
     def accept_cookies(self, cookie_css_selector: str) -> None:
         """
@@ -96,8 +136,7 @@ class BaseScraper:
             )
             ActionChains(self.driver).double_click(cookies_button).perform()
         except TimeoutException:
-            # print("Timeout occured while accepting cookies.")
-            pass
+            self.logger.warning("Timeout occured while accepting cookies")
 
     @staticmethod
     def get_search_query() -> str:
@@ -168,8 +207,9 @@ class BaseScraper:
             StaleElementReferenceException,
             TimeoutException,
         ) as e:
-            print(f"Something went wrong searching on grailed.{e}")
-            traceback.format_exc()
+            self.logger.error(
+                f"An error occurred while searching on Grailed: {e}", exc_info=True
+            )
 
     @abstractmethod
     def get_to_search_bar_to_search(
@@ -223,12 +263,13 @@ class BaseScraper:
                 )
                 > min_count
             )
-            print(
-                f"Number of elements matching class '{class_name}' exceeded {min_count}."
+            # TODO: Explore logging the scraper instead of the class name or associating classes with scraper.
+            self.logger.info(
+                f"Number of elements matching class '{class_name} exceeded {min_count}."
             )
         except TimeoutException:
-            print(
-                f"Timeout occurred while waiting for class count to exceed {min_count}."
+            self.logger.warning(
+                f"Timeout occured while waiting for class count to exceed {min_count}."
             )
 
     @staticmethod
@@ -324,6 +365,7 @@ class GrailedScraper(BaseScraper):
 
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
+        self.logger = base_scraper.logger
 
     def run_scraper(self, search_query) -> None:
         """
@@ -388,8 +430,9 @@ class GrailedScraper(BaseScraper):
             StaleElementReferenceException,
             TimeoutException,
         ) as e:
-            print(f"Error interacting with Grailed search bar: {e}")
-            traceback.print_exc()
+            self.logger.error(
+                f"Error interacting with Grailed search bar: {e}", exc_info=True
+            )
             sys.exit(1)
 
     def _dismiss_login_popup(self, timeout: int) -> None:
@@ -429,7 +472,7 @@ class GrailedScraper(BaseScraper):
             )
 
         except TimeoutException:
-            print("Login popup did not appear within the timeout.")
+            self.logger.info("Login popup did not appear within the timeout.")
 
 
 class DepopScraper(BaseScraper):
@@ -471,19 +514,11 @@ class DepopScraper(BaseScraper):
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler("logs/scraper.log")
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
+        self.logger = base_scraper.logger
 
-    def run_scraper(self, search_query) -> None:
+    def run_scraper(self, search_query: str) -> None:
         """
         Runs the Depop scraper to search for items based on the provided search query.
 
@@ -498,7 +533,7 @@ class DepopScraper(BaseScraper):
 
     def get_to_search_bar_to_search(
         self,
-        search_icon_css_selector: str,
+        search_bar_css_selector: str,
         timeout=2,
     ) -> None:
         """
@@ -515,7 +550,7 @@ class DepopScraper(BaseScraper):
             self.accept_cookies(self.COOKIE_CSS_SELECTOR)
 
             search_icon = WebDriverWait(self.driver, timeout).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, search_icon_css_selector))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
             )
             search_icon.click()
 
@@ -524,7 +559,7 @@ class DepopScraper(BaseScraper):
             StaleElementReferenceException,
             TimeoutException,
         ) as e:
-            print(f"Error interacting with search bar: {e}")
+            self.logger.error(f"Error interacting with search bar: {e}", exc_info=True)
             self.driver.quit()
 
     def type_search(
@@ -591,15 +626,50 @@ class DepopScraper(BaseScraper):
         )
 
     @staticmethod
+    def get_logger() -> logging.Logger:
+        """
+        Retrieves a static logger instance for the static methods in DepopScraper.
+
+        This method configures a logger instance with a TimedRotatingFileHandler for log rotation.
+        Log files are rotated daily, and a specified number of backup log files are retained.
+        The logger is configured to log messages with DEBUG level and above.
+
+        Returns:
+            - logger (logging.Logger): A logger instance configured with a TimedRotatingFileHandler.
+        """
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+
+        # Create logs directory if it doesn't exist
+        logs_dir = "logs"
+        os.makedirs(logs_dir, exist_ok=True)
+
+        # Create a TimedRotatingFileHandler for log rotation
+        log_file = os.path.join(logs_dir, "scraper.log")
+        handler = TimedRotatingFileHandler(
+            log_file, when="midnight", interval=1, backupCount=7
+        )  # Rotate daily, keep 7 days' worth of logs
+        handler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+
+        logger.addHandler(handler)
+
+        return logger
+
+    @staticmethod
     def get_page_sources_concurrently(urls):
         """
         Fetches page sources concurrently for a list of URLs using ThreadPoolExecutor.
 
         Args:
-            urls (list): List of URLs for which to fetch page sources.
+            - urls (list): List of URLs for which to fetch page sources.
 
         Returns:
-            dict: A dictionary where keys are URLs and values are the corresponding page sources.
+            - dict: A dictionary where keys are URLs and values are the corresponding page sources.
 
         This method fetches page sources for a list of URLs concurrently using ThreadPoolExecutor.
         It handles potential errors during fetching, such as cancellations or exceptions, and
@@ -615,7 +685,7 @@ class DepopScraper(BaseScraper):
         options = Options()
         options.add_argument("--log-level=3")
 
-        logger = DepopScraper.logger
+        logger = DepopScraper.get_logger()
 
         max_workers = 5
         backoff_delay = 2  # Initial backoff delay in seconds
@@ -640,18 +710,16 @@ class DepopScraper(BaseScraper):
                     try:
                         future.result()
                     except CancelledError:
-                        logger.error("Task canceled:")
-                        # Log the traceback for the CancelledError
-                        logger.debug(traceback.format_exc())
+                        logger.error("Task canceled:", exc_info=True)
                     except Exception as e:
                         logger.error(
-                            "Error fetching page source for %s: %s", future.result(), e
+                            f"Error fetching page source for {future.result()}: {e}",
+                            exc_info=True,
                         )
-                        logger.debug(traceback.format_exc())
                         future.cancel()
             except KeyboardInterrupt:
                 # Handle keyboard interrupt at the outer level
-                print(
+                logger.error(
                     "KeyboardInterrupt: Cancelling remaining tasks and quitting WebDriver..."
                 )
                 for f in futures:
