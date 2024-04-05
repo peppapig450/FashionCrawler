@@ -17,3 +17,4 @@ enable=logging-not-lazy
 notes=FIXME,
       XXX,
       TODO
+ignore=/opt/homebrew
