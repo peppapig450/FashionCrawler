@@ -6,4 +6,14 @@ jobs=1  # >1 hides results
 disable=line-too-long,
         super-init-not-called,
         c-extension-no-member,
-        arguments-differ
+        arguments-differ,
+        logging-fstring-interpolation,
+
+enable=logging-not-lazy
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME,
+      XXX,
+      TODO
