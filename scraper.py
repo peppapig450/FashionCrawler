@@ -44,32 +44,48 @@ class BaseScraper:
     Base class for implementing web scraping functionality.
 
     Attributes:
-    - config (dict): Configuration settings for the web scraper.
+        config (dict):
+            Configuration settings for the web scraper.
 
     Methods:
-    - __init__(self, config): Initializes the scraper with the provided configuration.
-    - accept_cookies(self, cookie_css_selector: str) -> None:
-        Accepts cookies on the website by locating and clicking the corresponding button.
-    - get_search_query() -> str:
-        Prompt the user to enter a search query.
-    - search_for_query(self, search_query: str, search_bar_css_selector: str, submit_button_css_selector: str) -> None:
-        Perform a search with the provided query.
-    - type_search(self, search: str, search_bar_css_selector: str, submit_button_css_selector: str) -> None:
-        Enter the provided search query into the search bar and submit the search.
-    - get_to_search_bar_to_search(self, search_bar_css_selector: str, timeout=2) -> None:
-        Navigate to the search bar and interact with it to initiate a search.
-    - navigate_to_search_bar(self, base_url: str, search_bar_css_selector: str) -> None:
-        Navigate to the search bar of the website.
-    - wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=5) -> None:
-        Wait until the number of elements matching the specified class exceeds a minimum count.
-    - get_chrome_driver(options):
-        Initialize and return a Chrome WebDriver instance with specified options.
-    - configure_driver_options(config):
-        Configure the options for the Chrome WebDriver.
-    - wait_for_page_load(self, class_name: str, min_count: int) -> None:
-        Wait for the page to load completely.
-    - run_scraper(self, search_query):
-        Abstract method to run the scraper for a given search query.
+        __init__(self, config):
+            Initializes the scraper with the provided configuration.
+
+        accept_cookies(self, cookie_css_selector: str) -> None:
+            Accepts cookies on the website by locating and clicking the corresponding button.
+
+        get_search_query() -> str:
+            Prompt the user to enter a search query.
+
+        search_for_query(self, search_query: str, search_bar_css_selector: str, submit_button_css_selector: str) -> None:
+            Perform a search with the provided query.
+
+        type_search(self, search: str, search_bar_css_selector: str, submit_button_css_selector: str) -> None:
+            Enter the provided search query into the search bar and submit the search.
+
+        get_to_search_bar_to_search(self, search_bar_css_selector: str, timeout=2) -> None:
+            Navigate to the search bar and interact with it to initiate a search.
+
+        navigate_to_search_bar(self, base_url: str, search_bar_css_selector: str) -> None:
+            Navigate to the search bar of the website.
+
+        wait_until_class_count_exceeds(self, class_name: str, min_count: int, timeout=5) -> None:
+            Wait until the number of elements matching the specified class exceeds a minimum count.
+
+        get_chrome_driver(options):
+            Initialize and return a Chrome WebDriver instance with specified options.
+
+        configure_driver_options(config):
+            Configure the options for the Chrome WebDriver.
+
+        wait_for_page_load(self, class_name: str, min_count: int) -> None:
+            Wait for the page to load completely.
+
+        run_scraper(self, search_query):
+            Abstract method to run the scraper for a given search query.
+
+        get_logger(self) -> logging.Logger:
+            Retrieves a logger instance for the scraper.
     """
 
     def __init__(self, config):
@@ -112,7 +128,7 @@ class BaseScraper:
         handler.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(exc_info)s"
         )
         handler.setFormatter(formatter)
 
@@ -480,21 +496,57 @@ class DepopScraper(BaseScraper):
     Subclass of BaseScraper for scraping data from the Depop website.
 
     Attributes:
-    - COOKIE_CSS_SELECTOR (str): CSS selector for the cookies button.
-    - SEARCH_ICON_SELECTOR (str): CSS selector for the search icon.
-    - SEARCH_BAR_SELECTOR (str): CSS selector for the search bar.
-    - SUBMIT_BUTTON_SELECTOR (str): CSS selector for the submit button.
-    - BACKUP_SUBMIT_BUTTON_SELECTOR (str): CSS selector for the backup submit button.
-    - BASE_URL (str): Base URL of the Depop website.
-    - ITEM_CLASS_NAME (str): CSS class name for identifying items on the page.
-    - MIN_COUNT (int): Minimum count of items to wait for during page load.
+        COOKIE_CSS_SELECTOR (str):
+            CSS selector for the cookies button.
+        SEARCH_ICON_SELECTOR (str):
+            CSS selector for the search icon.
+        SEARCH_BAR_SELECTOR (str):
+            CSS selector for the search bar.
+        SUBMIT_BUTTON_SELECTOR (str):
+            CSS selector for the submit button.
+        BACKUP_SUBMIT_BUTTON_SELECTOR (str):
+            CSS selector for the backup submit button.
+        BASE_URL (str):
+            Base URL of the Depop website.
+        ITEM_CLASS_NAME (str):
+            CSS class name for identifying items on the page.
+        MIN_COUNT (int):
+            Minimum count of items to wait for during page load.
 
     Methods:
-    - __init__(self, base_scraper): Initializes the Depop scraper with the base scraper object.
-    - run_scraper(self, search_query) -> None: Runs the Depop scraper to search for items based on the provided search query.
-    - get_to_search_bar_to_search(self, search_icon_css_selector: str, timeout=2) -> None: Navigate to the search bar and interact with it to initiate a search.
-    - type_search(self, search: str, search_bar_css_selector: str, submit_button_css_selector: str) -> None: Enter the provided search query into the search bar and submit the search.
-    - _navigate_and_search(self, search_query: str) -> None: Navigates to the search bar and performs a search based on the provided query.
+        __init__(self, base_scraper):
+            Initializes the Depop scraper with the base scraper object.
+        run_scraper(self, search_query) -> None:
+            Runs the Depop scraper to search for items based on the provided search query.
+        get_to_search_bar_to_search(
+            self,
+            search_bar_css_selector: str,
+            timeout=2
+        ) -> None:
+            Navigate to the search bar and interact with it to initiate a search.
+        type_search(
+            self,
+            search: str,
+            search_bar_css_selector: str,
+            submit_button_css_selector: str
+        ) -> None:
+            Enter the provided search query into the search bar and submit the search.
+        _navigate_and_search(self, search_query: str) -> None:
+            Navigates to the search bar and performs a search based on the provided query.
+        get_logger() -> logging.Logger:
+            Retrieves a static logger instance for the static methods in DepopScraper.
+        get_page_sources_concurrently(urls):
+            Fetches page sources concurrently for a list of URLs using ThreadPoolExecutor.
+        _fetch_update_page_source(
+            url: str,
+            page_sources,
+            lock: threading.Lock,
+            options: Options,
+            logger: logging.Logger,
+            max_retries: int,
+            backoff_delay: int
+        ):
+            Fetches and updates the page source for a given URL.
     """
 
     # Element selectors
@@ -652,7 +704,7 @@ class DepopScraper(BaseScraper):
         handler.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(exc_info)s"
         )
         handler.setFormatter(formatter)
 
