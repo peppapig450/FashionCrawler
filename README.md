@@ -21,7 +21,7 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 ## Project Plan
 
-#### To-Do List / Possible Features (By Priority)
+#### To-Do List / Possible Features:
 
 - [ ] Implement logging
 
@@ -37,9 +37,9 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [ ] Process the outputted files and filter or maybe display visually
 
-- [ ] Add headless mode andn Print progress updates to stdout
+- [ ] Add headless mode and Print progress updates to stdout
 
-- [ ] Keep poetry and requirements.txt synchronized
+- [X] Keep poetry and requirements.txt synchronized
 
 ## Installation
 
