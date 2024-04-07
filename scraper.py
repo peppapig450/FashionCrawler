@@ -214,9 +214,20 @@ class BaseScraper:
                 EC.element_to_be_clickable((By.CSS_SELECTOR, search_bar_css_selector))
             )
 
-            ActionChains(self.driver).send_keys_to_element(
-                search_bar, search
-            ).send_keys(Keys.ENTER).perform()
+            if type(self).__name__ == "GrailedScraper":
+                ActionChains(self.driver).send_keys_to_element(
+                    search_bar, search
+                ).send_keys(Keys.ENTER).perform()
+
+            else:
+                submit_button = WebDriverWait(self.driver, 3).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, submit_button_css_selector)
+                    )
+                )
+                ActionChains(self.driver).click(search_bar).send_keys(search).click(
+                    submit_button
+                ).perform()
 
         except (
             NoSuchElementException,
@@ -224,7 +235,8 @@ class BaseScraper:
             TimeoutException,
         ) as e:
             self.logger.error(
-                f"An error occurred while searching on Grailed: {e}", exc_info=True
+                f"An error occurred while searching on a search bar.: {e}",
+                exc_info=True,
             )
 
     @abstractmethod
