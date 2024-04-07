@@ -315,7 +315,16 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             DataFrame containing extracted data from the item links.
         """
-        all_data = []
+        all_data = {
+            "Title": [],
+            "Price": [],
+            "Seller": [],
+            "Size": [],
+            "Condition": [],
+            "Description": [],
+            "Listing Age": [],
+            "Listing Link": [],
+        }
 
         page_sources = {}
         page_sources = DepopScraper.get_page_sources_concurrently(links)
@@ -323,9 +332,13 @@ class DepopDataExtractor(BaseDataExtractor):
         for url, source in page_sources.items():
             if source:
                 item_data = self.extract_data(source, url)
-                all_data.append(item_data)
+                for key, value in item_data.items():
+                    if key == "Listing Link":
+                        all_data[key].append(value)
+                    else:
+                        all_data[key].extend(value)
 
-        return pd.DataFrame(all_data)
+        return pd.DataFrame.from_dict(all_data)
 
     def extract_data(self, page_source, url):
         """
@@ -409,7 +422,7 @@ class DepopDataExtractor(BaseDataExtractor):
         if seller_element:
             return [seller_element[0].text.strip()]
         else:
-            return []
+            return [""]
 
     def extract_item_description(self):
         """
@@ -444,6 +457,8 @@ class DepopDataExtractor(BaseDataExtractor):
                 conditions.append(attribute_elements[1].text.strip())
             elif len(attribute_elements) <= 2:
                 conditions.append(attribute_elements[0].text.strip())
+        else:
+            conditions.append("")
 
         return conditions
 
@@ -462,6 +477,8 @@ class DepopDataExtractor(BaseDataExtractor):
 
         if len(attribute_elements) >= 3:
             size.append(attribute_elements[0].text.strip())
+        else:
+            size.append("")
 
         return size
 
