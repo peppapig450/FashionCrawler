@@ -439,10 +439,11 @@ class DepopDataExtractor(BaseDataExtractor):
         )
         conditions = []
 
-        if len(attribute_elements) >= 3:
-            conditions.append(attribute_elements[1].text.strip())
-        elif len(attribute_elements) <= 2:
-            conditions.append(attribute_elements[0].text.strip())
+        if attribute_elements:
+            if len(attribute_elements) >= 3:
+                conditions.append(attribute_elements[1].text.strip())
+            elif len(attribute_elements) <= 2:
+                conditions.append(attribute_elements[0].text.strip())
 
         return conditions
 
