@@ -37,6 +37,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+import logger_config
 
 
 class BaseScraper:
@@ -105,36 +106,10 @@ class BaseScraper:
         """
         Retrieves a logger instance for the scraper.
 
-        This method configures a logger instance with a TimedRotatingFileHandler for log rotation.
-        Log files are rotated daily, and a specified number of backup log files are retained.
-        The logger is configured to log messages with DEBUG level and above.
-
         Returns:
             logger (logging.Logger): A logger instance configured with a TimedRotatingFileHandler.
         """
-
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.DEBUG)
-
-        # Create logs directory if it doesn't exist
-        logs_dir = "logs"
-        os.makedirs(logs_dir, exist_ok=True)
-
-        # Create a TimedRotatingFileHandler for log rotation
-        log_file = os.path.join(logs_dir, "scraper.log")
-        handler = TimedRotatingFileHandler(
-            log_file, when="midnight", interval=1, backupCount=7
-        )  # Rotate daily, keep 7 days' worth of logs
-        handler.setLevel(logging.DEBUG)
-
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(exc_info)s"
-        )
-        handler.setFormatter(formatter)
-
-        logger.addHandler(handler)
-
-        return logger
+        return logger_config.configure_logger()
 
     def accept_cookies(self, cookie_css_selector: str) -> None:
         """
@@ -393,7 +368,7 @@ class GrailedScraper(BaseScraper):
 
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
-        self.logger = base_scraper.logger
+        self.logger = self.get_logger()
 
     def run_scraper(self, search_query) -> None:
         """
@@ -578,9 +553,10 @@ class DepopScraper(BaseScraper):
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
     MIN_COUNT = 30
 
+    logger = logger_config.configure_logger()
+
     def __init__(self, base_scraper):
         self.driver = base_scraper.driver
-        self.logger = base_scraper.logger
 
     def run_scraper(self, search_query: str) -> None:
         """
@@ -690,41 +666,6 @@ class DepopScraper(BaseScraper):
         )
 
     @staticmethod
-    def get_logger() -> logging.Logger:
-        """
-        Retrieves a static logger instance for the static methods in DepopScraper.
-
-        This method configures a logger instance with a TimedRotatingFileHandler for log rotation.
-        Log files are rotated daily, and a specified number of backup log files are retained.
-        The logger is configured to log messages with DEBUG level and above.
-
-        Returns:
-            - logger (logging.Logger): A logger instance configured with a TimedRotatingFileHandler.
-        """
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.DEBUG)
-
-        # Create logs directory if it doesn't exist
-        logs_dir = "logs"
-        os.makedirs(logs_dir, exist_ok=True)
-
-        # Create a TimedRotatingFileHandler for log rotation
-        log_file = os.path.join(logs_dir, "scraper.log")
-        handler = TimedRotatingFileHandler(
-            log_file, when="midnight", interval=1, backupCount=7
-        )  # Rotate daily, keep 7 days' worth of logs
-        handler.setLevel(logging.DEBUG)
-
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(exc_info)s"
-        )
-        handler.setFormatter(formatter)
-
-        logger.addHandler(handler)
-
-        return logger
-
-    @staticmethod
     def get_page_sources_concurrently(urls):
         """
         Fetches page sources concurrently for a list of URLs using ThreadPoolExecutor.
@@ -749,7 +690,7 @@ class DepopScraper(BaseScraper):
         options = Options()
         options.add_argument("--log-level=3")
 
-        logger = DepopScraper.get_logger()
+        logger = DepopScraper.logger
 
         max_workers = 5
         backoff_delay = 2  # Initial backoff delay in seconds
