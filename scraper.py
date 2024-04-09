@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Module: scraper
+
+    Provide scraping functionality.
+"""
 
 import logging
-import os
 import sys
 import threading
 import time
 import traceback
 from abc import abstractmethod
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
-from logging.handlers import TimedRotatingFileHandler
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -37,6 +39,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+
 import logger_config
 
 
