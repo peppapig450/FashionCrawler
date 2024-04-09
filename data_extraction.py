@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Module: data_extraction
 
+    Data extraction from the sites we scrape.
+"""
 
 from abc import abstractmethod
 from typing import List
 
-import pandas as pd
+import pandas
 import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
 
 from scraper import DepopScraper
+import logger_config
 
 
 class BaseDataExtractor:
@@ -70,7 +74,7 @@ class BaseDataExtractor:
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pd.DataFrame.from_dict(data_extraction_functions, orient="index")
+        df = pandas.DataFrame.from_dict(data_extraction_functions, orient="index")
         return df
 
 
@@ -94,6 +98,7 @@ class GrailedDataExtractor(BaseDataExtractor):
 
     def __init__(self, driver):
         self.driver = driver
+        self.logger = logger_config.configure_logger()
 
     def get_page_soup(self, driver):
         """
@@ -107,6 +112,7 @@ class GrailedDataExtractor(BaseDataExtractor):
 
     def extract_data_to_dataframe(self):
         self.soup = self.get_page_soup(self.driver)
+        self.logger.debug("Beginning Grailed data extraction.")
 
         data_extraction_functions = {
             "Posted Time": self.extract_item_post_times,
@@ -121,7 +127,8 @@ class GrailedDataExtractor(BaseDataExtractor):
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pd.DataFrame.from_dict(extracted_data, orient="columns")
+        df = pandas.DataFrame.from_dict(extracted_data, orient="columns")
+        self.logger.debug("Grailed data extraction completed.")
 
         return df
 
@@ -246,12 +253,13 @@ class DepopDataExtractor(BaseDataExtractor):
 
     def __init__(self, driver):
         """
-        Initializes a DepopDataExtractor object.
+        Initializes a DepopandasataExtractor object.
 
         Args:
             driver: Selenium WebDriver instance for interacting with the web pages.
         """
         self.driver = driver
+        self.logger = logger_config.configure_logger()
 
     # get the soup instance we're gonna use to scrape the links off of
     def get_page_soup(self, page_source=None):
@@ -268,7 +276,7 @@ class DepopDataExtractor(BaseDataExtractor):
         else:
             return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
-    def extract_data_to_dataframe(self):
+    def extract_data_to_dataframe(self) -> pandas.DataFrame:
         """
         Extracts data from item links obtained by `get_item_links` method and returns a DataFrame.
 
@@ -280,7 +288,7 @@ class DepopDataExtractor(BaseDataExtractor):
         - pandas.DataFrame: Extracted data as a DataFrame.
 
         Example:
-            extractor = DepopDataExtractor(driver)
+            extractor = DepopandasataExtractor(driver)
             dataframe = extractor.extract_data_to_dataframe()
         """
         item_links = self.get_item_links()
@@ -294,6 +302,7 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List of item links extracted from the current page.
         """
+        self.logger.debug("Retrieving Depop item links.")
         soup = self.get_page_soup()
 
         links = list(
@@ -303,6 +312,7 @@ class DepopDataExtractor(BaseDataExtractor):
             )
         )[:40]
 
+        self.logger.debug(f"Found {len(links)} item links.")
         return links
 
     def extract_data_from_item_links(self, links):
@@ -326,7 +336,6 @@ class DepopDataExtractor(BaseDataExtractor):
             "Listing Link": [],
         }
 
-        page_sources = {}
         page_sources = DepopScraper.get_page_sources_concurrently(links)
 
         for url, source in page_sources.items():
@@ -337,8 +346,13 @@ class DepopDataExtractor(BaseDataExtractor):
                         all_data[key].append(value)
                     else:
                         all_data[key].extend(value)
+            else:
+                self.logger.error(
+                    f"Failed to retrieve page source for listing link: {url}"
+                )
 
-        return pd.DataFrame.from_dict(all_data)
+        self.logger.debug("Extraction from item links completed.")
+        return pandas.DataFrame.from_dict(all_data)
 
     def extract_data(self, page_source, url):
         """
@@ -350,6 +364,7 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             Dictionary containing extracted data from the item page.
         """
+        self.logger.debug(f"Extracting data from item page: {url}")
         self.soup = self.get_page_soup(page_source)
 
         data_extraction_functions = {
@@ -367,6 +382,7 @@ class DepopDataExtractor(BaseDataExtractor):
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
+        self.logger.debug("Data extraction from item page completed.")
         return extracted_data
 
     def extract_item_title(self) -> List[str]:
