@@ -59,10 +59,11 @@ def main():
     for site in enabled_sites:
         scraper_cls, extractor_cls = scrapers.get(site)  # type: ignore
         if scraper_cls:
-            extraction = extractor_cls(driver=base_scraper.driver)
+            extraction = extractor_cls(driver=scraper_cls.driver)
             df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df
+        scraper_cls.driver.quit()
 
     output_filename = str(config.get("output", search_query))
     utils.IOUtils.handle_dataframe_output(dataframes, output_filename, config)
