@@ -38,10 +38,10 @@ def configure_logger():
         "disable_existing_loggers": False,
         "formatters": {
             "debug_formatter": {
-                "format": "{asctime} - {name} - {levelname} - {module}.{class} - {funcName}:{lineno} - {message} - {exc_info}"
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s:%(lineno)d - %(message)s - %(exc_info)s"
             },
             "info_formatter": {
-                "format": "{asctime} - {name} - {levelname} - {module}.{class} - {funcName} - {message}"
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s- %(funcName)s - %(message)s"
             },
         },
         "handlers": {
