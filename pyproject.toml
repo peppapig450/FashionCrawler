@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "FashionCrawler"
-version = "0.1.0"
+version = "0.2.0"
 description = "FashionCrawler is a versatile Python tool designed for scraping data from various online shopping platforms including Grailed, Depop, and more."
 authors = ["Nick Brady <normalcitizen24@proton.me> <nbgenius1@gmail.com>"]
 readme = "README.md"
