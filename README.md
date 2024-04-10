@@ -23,7 +23,7 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 #### To-Do List / Possible Features:
 
-- [ ] Implement logging
+- [X] Implement logging
 
 - [X] Implement Depop data extraction and scraping.
 
