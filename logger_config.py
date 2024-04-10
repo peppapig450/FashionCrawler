@@ -41,7 +41,7 @@ def configure_logger():
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s:%(lineno)d - %(message)s - %(exc_info)s"
             },
             "info_formatter": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s- %(funcName)s - %(message)s"
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s"
             },
         },
         "handlers": {
