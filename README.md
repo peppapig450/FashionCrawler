@@ -29,6 +29,8 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [X] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
 
+- [ ] Refactor directory structure to the type found [here](https://github.com/peppapig450/FashionCrawler/tree/refactor/packaging-layout)
+
 - [ ] Implement Stockx data extraction and scraping.
 
 - [ ] Instead of scraping Stockx for market data use their api. (maybe use go for speed)
