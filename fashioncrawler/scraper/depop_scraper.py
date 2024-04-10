@@ -1,7 +1,7 @@
-from .base_scraper import *
+import threading
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
-import threading
+from .base_scraper import *
 
 
 class DepopScraper(BaseScraper):
