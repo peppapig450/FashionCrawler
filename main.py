@@ -15,13 +15,10 @@
 # ==============================================================================
 
 import cProfile
-
-from data_extraction import DepopDataExtractor, GrailedDataExtractor
-from io_utils import IOUtils
-from scraper import BaseScraper, DepopScraper, GrailedScraper
+from fashioncrawler import utils, scraper, extractor
 
 
-def run_scraper(scraper, extractor, search_query):
+def run_scraper(scraping, extraction, search_query):
     """
     Run the specified scraper and extract data.
 
@@ -34,20 +31,23 @@ def run_scraper(scraper, extractor, search_query):
     - pd.DataFrame: Extracted data as a DataFrame.
     """
 
-    scraper.run_scraper(search_query)
-    df = extractor.extract_data_to_dataframe()
+    scraping.run_scraper(search_query)
+    df = extraction.extract_data_to_dataframe()
     return df
 
 
 def main():
-    config = IOUtils.parse_args()
+    config = utils.IOUtils.parse_args()
     search_query = config.get("search_query", "")
 
-    base_scraper = BaseScraper(config)
+    base_scraper = scraper.BaseScraper(config)
 
     scrapers = {
-        "depop": (DepopScraper(base_scraper), DepopDataExtractor),
-        "grailed": (GrailedScraper(base_scraper), GrailedDataExtractor),
+        "depop": (scraper.DepopScraper(base_scraper), extractor.DepopDataExtractor),
+        "grailed": (
+            scraper.GrailedScraper(base_scraper),
+            extractor.GrailedDataExtractor,
+        ),
     }
 
     dataframes = {
@@ -57,16 +57,17 @@ def main():
 
     enabled_sites = [site["name"] for site in config["sites"] if site["enabled"]]
     for site in enabled_sites:
-        scraper, extractor_cls = scrapers.get(site)  # type: ignore
-        if scraper:
-            extractor = extractor_cls(driver=base_scraper.driver)
-            df = run_scraper(scraper, extractor, search_query)
+        scraper_cls, extractor_cls = scrapers.get(site)  # type: ignore
+        if scraper_cls:
+            extraction = extractor_cls(driver=base_scraper.driver)
+            df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df
 
     output_filename = str(config.get("output", search_query))
-    IOUtils.handle_dataframe_output(dataframes, output_filename, config)
+    utils.IOUtils.handle_dataframe_output(dataframes, output_filename, config)
 
 
 if __name__ == "__main__":
-    cProfile.run("main()", filename="profile_results.txt")
+    # cProfile.run("main()", filename="profile_results.txt")
+    main()
