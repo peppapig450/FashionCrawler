@@ -42,11 +42,11 @@ def main():
 
     scrapers = {
         "depop": (
-            scraper.DepopScraper(config),
+            lambda: scraper.DepopScraper(config),
             extractor.DepopDataExtractor,
         ),
         "grailed": (
-            scraper.GrailedScraper(config),
+            lambda: scraper.GrailedScraper(config),
             extractor.GrailedDataExtractor,
         ),
     }
@@ -58,8 +58,9 @@ def main():
 
     enabled_sites = [site["name"] for site in config["sites"] if site["enabled"]]
     for site in enabled_sites:
-        scraper_cls, extractor_cls = scrapers.get(site)  # type: ignore
-        if scraper_cls:
+        scraper_cls_factory, extractor_cls = scrapers.get(site)  # type: ignore
+        if scraper_cls_factory:
+            scraper_cls = scraper_cls_factory()
             extraction = extractor_cls(driver=scraper_cls.driver)
             df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
