@@ -40,12 +40,13 @@ def main():
     config = utils.IOUtils.parse_args()
     search_query = config.get("search_query", "")
 
-    base_scraper = scraper.BaseScraper(config)
-
     scrapers = {
-        "depop": (scraper.DepopScraper(base_scraper), extractor.DepopDataExtractor),
+        "depop": (
+            scraper.DepopScraper(config),
+            extractor.DepopDataExtractor,
+        ),
         "grailed": (
-            scraper.GrailedScraper(base_scraper),
+            scraper.GrailedScraper(config),
             extractor.GrailedDataExtractor,
         ),
     }
@@ -63,6 +64,7 @@ def main():
             df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df
+                scraper_cls.driver.quit()
 
     output_filename = str(config.get("output", search_query))
     utils.IOUtils.handle_dataframe_output(dataframes, output_filename, config)

@@ -34,8 +34,8 @@ class GrailedScraper(BaseScraper):
     ITEM_CLASS_NAME = "feed-item"
     MIN_COUNT = 30
 
-    def __init__(self, base_scraper):
-        super().__init__(base_scraper.config)
+    def __init__(self, config):
+        super().__init__(config=config)
 
     def run_scraper(self, search_query) -> None:
         """
@@ -49,6 +49,7 @@ class GrailedScraper(BaseScraper):
         """
         self._navigate_and_search(search_query)
         super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
+        self.logger.debug("Running Grailed Scraper.")
 
     def _navigate_and_search(self, search_query: str) -> None:
         """

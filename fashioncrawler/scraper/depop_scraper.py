@@ -81,8 +81,8 @@ class DepopScraper(BaseScraper):
 
     logger = logger_config.configure_logger()
 
-    def __init__(self, base_scraper):
-        super().__init__(base_scraper.config)
+    def __init__(self, config):
+        super().__init__(config=config)
 
     def run_scraper(self, search_query: str) -> None:
         """
@@ -173,6 +173,21 @@ class DepopScraper(BaseScraper):
                 raise NoSuchElementException(
                     "Both primary and backup submit button selectors not found"
                 ) from exe
+
+    @staticmethod
+    def get_static_chrome_driver(options):
+        """
+        Initialize and return a Chrome WebDriver instance with specified options.
+
+        Args:
+        - options: An instance of ChromeOptions configured with desired browser options.
+
+        Returns:
+        - driver: A Chrome WebDriver instance ready for use.
+        """
+        return webdriver.Chrome(
+            options=options, service=ChromeService(ChromeDriverManager().install())
+        )
 
     def _navigate_and_search(self, search_query: str) -> None:
         """
@@ -290,7 +305,7 @@ class DepopScraper(BaseScraper):
         """
         retries = 0
         while retries < max_retries:
-            driver = DepopScraper.get_chrome_driver(options)
+            driver = DepopScraper.get_static_chrome_driver(options)
             # Catch various exceptions that might occur during navigation
             logger.info(f"Trying to access page_source for url {url}")
             try:
