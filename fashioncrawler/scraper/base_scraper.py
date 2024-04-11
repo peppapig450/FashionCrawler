@@ -70,29 +70,44 @@ class BaseScraper:
             Retrieves a logger instance for the scraper.
     """
 
-    driver = None
-
-    @classmethod
-    def initialize_driver(cls):
-        if cls.driver is None:
-            cls.driver = cls.get_chrome_driver()
-
     def __init__(self, config):
-        try:
-            self.config = config
-            self.logger = self.get_logger()
-            if BaseScraper.driver is None:
-                BaseScraper.driver = self.get_chrome_driver()
-        except Exception as e:
-            self.logger.error(
-                f"An error occurred while initializing the ChromeDriver: {e}",
-                exc_info=True,
-            )
-            raise
+        self.config = config
+        self.logger = self.get_logger()
+        self.driver = self.get_chrome_driver(config)
 
-    def __init_subclass__(cls, **kwargs) -> None:
-        super().__init_subclass__(**kwargs)
-        cls.driver = BaseScraper.driver
+    def get_chrome_driver(self, config):
+        """
+        Initialize and return a Chrome WebDriver instance with specified options.
+
+        Args:
+        - options: An instance of ChromeOptions configured with desired browser options.
+
+        Returns:
+        - driver: A Chrome WebDriver instance ready for use.
+        """
+        options = self.configure_driver_options(config)
+        return webdriver.Chrome(
+            options=options, service=ChromeService(ChromeDriverManager().install())
+        )
+
+    def configure_driver_options(self, config):
+        """
+        Configure the options for the Chrome WebDriver.
+
+        Returns:
+        - options: The configured ChromeOptions instance.
+        """
+        options = Options()
+
+        if sys.platform.startswith("win"):
+            options.add_argument("--log-level=3")
+
+        options.add_argument("--disable-blink-features=AutomationControlled")
+
+        if config["headless"]:
+            options.add_argument("--headless=new")
+
+        return options
 
     def get_logger(self) -> logging.Logger:
         """
@@ -266,40 +281,6 @@ class BaseScraper:
             self.logger.warning(
                 f"Timeout occured while waiting for class count to exceed {min_count}."
             )
-
-    def get_chrome_driver(self):
-        """
-        Initialize and return a Chrome WebDriver instance with specified options.
-
-        Args:
-        - options: An instance of ChromeOptions configured with desired browser options.
-
-        Returns:
-        - driver: A Chrome WebDriver instance ready for use.
-        """
-        options = self.configure_driver_options(self.config)
-        return webdriver.Chrome(
-            options=options, service=ChromeService(ChromeDriverManager().install())
-        )
-
-    def configure_driver_options(self, config):
-        """
-        Configure the options for the Chrome WebDriver.
-
-        Returns:
-        - options: The configured ChromeOptions instance.
-        """
-        options = Options()
-
-        if sys.platform.startswith("win"):
-            options.add_argument("--log-level=3")
-
-        options.add_argument("--disable-blink-features=AutomationControlled")
-
-        if config["headless"]:
-            options.add_argument("--headless=new")
-
-        return options
 
     def wait_for_page_load(self, class_name: str, min_count: int) -> None:
         """
