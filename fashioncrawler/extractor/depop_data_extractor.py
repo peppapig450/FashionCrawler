@@ -288,7 +288,8 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         return list(
             map(
-                lambda time_posted: time_posted.text.replace("Listed", "").strip(),
+                lambda time_posted: time_posted.text.replace("Listed", "").strip()
+                + " ago",
                 sv.select("time[datetime]", self.soup),
             )
         )
