@@ -29,7 +29,11 @@ The original is [here](https://github.com/peppapig450/final-create-task-scraping
 
 - [X] Figure out how we're gonna handle the respective scrapers. [Line 10](https://github.com/peppapig450/FashionCrawler/blob/main/main.py#L10)
 
-- [ ] Refactor directory structure to the type found [here](https://github.com/peppapig450/FashionCrawler/tree/refactor/packaging-layout)
+- [X] Refactor directory structure to the type found [here](https://github.com/peppapig450/FashionCrawler/tree/refactor/packaging-layout)
+
+- [ ] Figure out a way to visualize the data (Html)
+
+- [ ] Feature to specify how many items we want to scrape (command line and config file)
 
 - [ ] Implement Stockx data extraction and scraping.
 
