@@ -14,7 +14,7 @@
 # limitations under the License.
 # ==============================================================================
 
-import cProfile
+# import cProfile
 from fashioncrawler import utils, scraper, extractor
 
 
@@ -71,5 +71,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # cProfile.run("main()", filename="profile_results.txt")
+    # cProfile.run("main()", filename="dev/profile_results.txt")
     main()
