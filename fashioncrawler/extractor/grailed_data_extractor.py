@@ -151,7 +151,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         """
         extracted_item_listing_links = list(
             map(
-                lambda listing_link: f"https://grailed.com{listing_link.get('href')}",
+                lambda listing_link: f"https://grailed.com{listing_link.get('href')}.split('?')[0]",
                 sv.select("a.listing-item-link", self.soup),
             )
         )

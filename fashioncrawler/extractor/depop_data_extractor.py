@@ -30,7 +30,7 @@ class DepopDataExtractor(BaseDataExtractor):
 
     def __init__(self, driver=None):
         """
-        Initializes a DepopandasataExtractor object.
+        Initializes a DepopDataExtractor object.
 
         Args:
             driver: Selenium WebDriver instance for interacting with the web pages.
