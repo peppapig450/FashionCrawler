@@ -155,7 +155,7 @@ class DepopDataExtractor(BaseDataExtractor):
             "Size": self.extract_item_size,
             "Condition": self.extract_item_condition,
             "Description": self.extract_item_description,
-            "Listing Age": self.extract_item_time_posted,
+            "Posted Time": self.extract_item_time_posted,
             "Listing Link": lambda: url,
         }
 
@@ -288,8 +288,7 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         return list(
             map(
-                lambda time_posted: time_posted.text.replace("Listed", "").strip()
-                + " ago",
+                lambda time_posted: time_posted.text.replace("Listed", "").strip(),
                 sv.select("time[datetime]", self.soup),
             )
         )

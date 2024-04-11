@@ -59,7 +59,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pandas.DataFrame.from_dict(extracted_data, orient="columns")
+        df = pandas.DataFrame.from_dict(extracted_data)
         self.logger.debug("Grailed data extraction completed.")
 
         return df
@@ -73,7 +73,8 @@ class GrailedDataExtractor(BaseDataExtractor):
         """
         extracted_item_post_times = list(
             map(
-                lambda time: time.text.split("\xa0ago")[0],
+                lambda time: time.text.split("\xa0ago")[0].replace("about ", "")
+                + " ago",
                 sv.select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
         )
