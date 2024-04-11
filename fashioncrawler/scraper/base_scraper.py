@@ -70,18 +70,29 @@ class BaseScraper:
             Retrieves a logger instance for the scraper.
     """
 
+    driver = None
+
+    @classmethod
+    def initialize_driver(cls):
+        if cls.driver is None:
+            cls.driver = cls.get_chrome_driver()
+
     def __init__(self, config):
         try:
             self.config = config
-            options = self.configure_driver_options(config)
-            self.driver = self.get_chrome_driver(options)
             self.logger = self.get_logger()
+            if BaseScraper.driver is None:
+                BaseScraper.driver = self.get_chrome_driver()
         except Exception as e:
             self.logger.error(
                 f"An error occurred while initializing the ChromeDriver: {e}",
                 exc_info=True,
             )
             raise
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.driver = BaseScraper.driver
 
     def get_logger(self) -> logging.Logger:
         """
@@ -256,8 +267,7 @@ class BaseScraper:
                 f"Timeout occured while waiting for class count to exceed {min_count}."
             )
 
-    @staticmethod
-    def get_chrome_driver(options):
+    def get_chrome_driver(self):
         """
         Initialize and return a Chrome WebDriver instance with specified options.
 
@@ -267,12 +277,12 @@ class BaseScraper:
         Returns:
         - driver: A Chrome WebDriver instance ready for use.
         """
+        options = self.configure_driver_options(self.config)
         return webdriver.Chrome(
             options=options, service=ChromeService(ChromeDriverManager().install())
         )
 
-    @staticmethod
-    def configure_driver_options(config):
+    def configure_driver_options(self, config):
         """
         Configure the options for the Chrome WebDriver.
 

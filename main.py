@@ -63,7 +63,6 @@ def main():
             df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df
-        scraper_cls.driver.quit()
 
     output_filename = str(config.get("output", search_query))
     utils.IOUtils.handle_dataframe_output(dataframes, output_filename, config)
