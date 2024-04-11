@@ -29,7 +29,7 @@ class BaseDataExtractor:
         self.page_source = driver.page_source
         self.logger = configure_logger()
 
-    def get_page_soup(self, driver):
+    def get_page_soup(self, page_source):
         """
         Parse the HTML page source and return a BeautifulSoup object.
 
@@ -37,7 +37,7 @@ class BaseDataExtractor:
             - soup: BeautifulSoup object representing the parsed HTML of the web page.
         """
         parser = etree.HTMLParser()
-        return BeautifulSoup(driver.page_source, "lxml", parser=parser)
+        return BeautifulSoup(page_source, "lxml", parser=parser)
 
     @abstractmethod
     def extract_data_to_dataframe(self, data_extraction_functions):

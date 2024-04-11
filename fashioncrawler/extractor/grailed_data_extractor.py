@@ -32,7 +32,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         else:
             super().__init__(driver)
 
-    def get_page_soup(self, driver):
+    def get_page_soup(self, page_source):
         """
         Gets the BeautifulSoup instance of the current page source.
 
@@ -40,18 +40,18 @@ class GrailedDataExtractor(BaseDataExtractor):
             BeautifulSoup instance of the current page source.
         """
         parser = etree.HTMLParser
-        return BeautifulSoup(driver.page_source, "lxml", parser=parser)
+        return BeautifulSoup(page_source, "lxml", parser=parser)
 
     def extract_data_to_dataframe(self):
-        self.soup = self.get_page_soup(self.driver)
+        self.soup = self.get_page_soup(self.driver.page_source)
         self.logger.debug("Beginning Grailed data extraction.")
 
         data_extraction_functions = {
-            "Posted Time": self.extract_item_post_times,
             "Title": self.extract_item_titles,
+            "Price": self.extract_item_prices,
             "Designer": self.extract_item_designers,
             "Size": self.extract_item_sizes,
-            "Price": self.extract_item_prices,
+            "Posted Time": self.extract_item_post_times,
             "Listing Link": self.extract_item_listing_link,
         }
 

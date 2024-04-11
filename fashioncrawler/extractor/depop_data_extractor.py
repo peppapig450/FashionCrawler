@@ -3,6 +3,7 @@ from fashioncrawler.scraper.depop_scraper import DepopScraper
 from .base_data_extractor import *
 
 
+# TODO: Extract the info about how many ppl have it in their bags etc
 class DepopDataExtractor(BaseDataExtractor):
     """
     Class for extracting data from Depop.
@@ -112,7 +113,7 @@ class DepopDataExtractor(BaseDataExtractor):
             "Size": [],
             "Condition": [],
             "Description": [],
-            "Listing Age": [],
+            "Posted Time": [],
             "Listing Link": [],
         }
 
