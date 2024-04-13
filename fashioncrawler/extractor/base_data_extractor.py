@@ -55,5 +55,5 @@ class BaseDataExtractor:
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pandas.DataFrame.from_dict(data_extraction_functions, orient="index")
+        df = pandas.DataFrame.from_dict(data_extraction_functions)
         return df
