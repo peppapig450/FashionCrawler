@@ -25,10 +25,11 @@ class BaseDataExtractor:
     - extract_data_to_dataframe(self, data_extraction_functions): Abstract method to extract data from the web page and store it in a Pandas DataFrame.
     """
 
-    def __init__(self, driver):
+    def __init__(self, driver, config):
         self.driver = driver
         self.page_source = driver.page_source
         self.logger = configure_logger()
+        self.config = config
 
     def get_page_soup(self, page_source):
         """

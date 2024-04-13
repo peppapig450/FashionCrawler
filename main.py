@@ -61,7 +61,7 @@ def main():
         scraper_cls_factory, extractor_cls = scrapers.get(site)  # type: ignore
         if scraper_cls_factory:
             scraper_cls = scraper_cls_factory()
-            extraction = extractor_cls(driver=scraper_cls.driver)
+            extraction = extractor_cls(driver=scraper_cls.driver, config=config)
             df = run_scraper(scraper_cls, extraction, search_query)
             if df is not None and not df.empty:
                 dataframes[site] = df

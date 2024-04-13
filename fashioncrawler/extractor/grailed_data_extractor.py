@@ -19,7 +19,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         - extract_item_listing_link(): Extracts the listing links of items from the BeautifulSoup object.
     """
 
-    def __init__(self, driver=None):
+    def __init__(self, config, driver=None):
         """
         Initializes a GrailedDataExtractor object.
 
@@ -27,10 +27,10 @@ class GrailedDataExtractor(BaseDataExtractor):
             driver: Selenium WebDriver instance for interacting with the web pages.
         """
         if driver:
-            super().__init__(driver)
+            super().__init__(driver, config)
             self.driver = driver
         else:
-            super().__init__(driver)
+            super().__init__(driver, config)
 
     def get_page_soup(self, page_source):
         """

@@ -29,7 +29,7 @@ class DepopDataExtractor(BaseDataExtractor):
         - extract_item_time_posted(): Extracts the time when the item was listed.
     """
 
-    def __init__(self, driver=None):
+    def __init__(self, config, driver=None):
         """
         Initializes a DepopDataExtractor object.
 
@@ -37,10 +37,10 @@ class DepopDataExtractor(BaseDataExtractor):
             driver: Selenium WebDriver instance for interacting with the web pages.
         """
         if driver:
-            super().__init__(driver)
+            super().__init__(driver, config)
             self.driver = driver
         else:
-            super().__init__(driver)
+            super().__init__(driver, config)
 
     # get the soup instance we're gonna use to scrape the links off of
     def get_page_soup(self, page_source=None):
