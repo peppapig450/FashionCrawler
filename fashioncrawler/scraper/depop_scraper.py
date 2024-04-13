@@ -175,7 +175,6 @@ class DepopScraper(BaseScraper):
 
     def _sort_by_newest(self, current_url: str):
         new_url = current_url + "&sort=newlyListed"
-        print(current_url)
         self.driver.get(new_url)
 
     @staticmethod
