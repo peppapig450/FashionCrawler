@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from lxml import etree
 
 from fashioncrawler.utils.logger_config import configure_logger
+from fashioncrawler.utils import Utils
 
 
 class BaseDataExtractor:

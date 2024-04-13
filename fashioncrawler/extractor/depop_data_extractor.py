@@ -286,9 +286,11 @@ class DepopDataExtractor(BaseDataExtractor):
         Returns:
             List containing the time of when the item was listed.
         """
-        return list(
+        extracted_post_times = list(
             map(
                 lambda time_posted: time_posted.text.replace("Listed", "").strip(),
                 sv.select("time[datetime]", self.soup),
             )
         )
+
+        return Utils.convert_to_datetime(extracted_post_times)

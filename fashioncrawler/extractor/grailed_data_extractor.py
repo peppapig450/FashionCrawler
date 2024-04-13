@@ -78,7 +78,7 @@ class GrailedDataExtractor(BaseDataExtractor):
                 sv.select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
         )
-        return extracted_item_post_times
+        return Utils.convert_to_datetime(extracted_item_post_times)
 
     def extract_item_titles(self):
         """
