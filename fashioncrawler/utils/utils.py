@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 
 class Utils:
+    # TODO: optimize this (check testing/testing.py)
     @classmethod
     def convert_to_datetime(cls, time_str_list):
         datetime_list = []
