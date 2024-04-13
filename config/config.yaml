@@ -10,3 +10,5 @@ sites:
     enabled: false
   - name: goat
     enabled: false
+
+count: 30
