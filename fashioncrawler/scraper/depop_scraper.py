@@ -77,7 +77,6 @@ class DepopScraper(BaseScraper):
 
     # Item related constants for page loading
     ITEM_CLASS_NAME = "styles__ProductImageGradient-sc-4aad5806-6.hzrneU"  # use image as there isn't a container for items
-    MIN_COUNT = 30
 
     logger = logger_config.configure_logger()
 
@@ -95,7 +94,7 @@ class DepopScraper(BaseScraper):
         - None
         """
         self._navigate_and_search(search_query)
-        super().wait_for_page_load(self.ITEM_CLASS_NAME, self.MIN_COUNT)
+        super().wait_for_page_load(self.ITEM_CLASS_NAME)
 
     def get_to_search_bar_to_search(
         self,
@@ -174,6 +173,11 @@ class DepopScraper(BaseScraper):
                     "Both primary and backup submit button selectors not found"
                 ) from exe
 
+    def _sort_by_newest(self, current_url: str):
+        new_url = current_url + "&sort=newlyListed"
+        print(current_url)
+        self.driver.get(new_url)
+
     @staticmethod
     def get_static_chrome_driver(options):
         """
@@ -205,6 +209,8 @@ class DepopScraper(BaseScraper):
             self.SEARCH_BAR_SELECTOR,
             self.SUBMIT_BUTTON_SELECTOR,
         )
+        super().wait_until_class_count_exceeds(self.ITEM_CLASS_NAME, 30, timeout=3)
+        self._sort_by_newest(self.driver.current_url)
 
     @staticmethod
     def get_page_sources_concurrently(urls):
