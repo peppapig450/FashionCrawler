@@ -39,6 +39,7 @@ class DepopDataExtractor(BaseDataExtractor):
         if driver:
             super().__init__(driver, config)
             self.driver = driver
+            self.count = config["count"]
         else:
             super().__init__(driver, config)
 
@@ -91,7 +92,7 @@ class DepopDataExtractor(BaseDataExtractor):
                 lambda item_link: f"https://depop.com{item_link.get('href')}",
                 sv.select(".styles__ProductCard-sc-4aad5806-4.ffvUlI", soup),
             )
-        )[:40]
+        )[: self.count]
 
         self.logger.debug(f"Found {len(links)} item links.")
         return links

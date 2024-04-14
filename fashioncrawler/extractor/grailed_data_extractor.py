@@ -29,6 +29,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         if driver:
             super().__init__(driver, config)
             self.driver = driver
+            self.count = self.config["count"]
         else:
             super().__init__(driver, config)
 
@@ -60,6 +61,10 @@ class GrailedDataExtractor(BaseDataExtractor):
             extracted_data[column] = func()
 
         df = pandas.DataFrame.from_dict(extracted_data)
+
+        if len(df) > self.count:
+            df = df.head(self.count)
+
         self.logger.debug("Grailed data extraction completed.")
 
         return df

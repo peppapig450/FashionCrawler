@@ -177,6 +177,63 @@ class DepopScraper(BaseScraper):
         new_url = current_url + "&sort=newlyListed"
         self.driver.get(new_url)
 
+    def scroll_to_load_more(self, class_name: str, min_count: int) -> None:
+        """
+        Scroll down until the desired count of elements with a specific class is reached.
+
+        Args:
+        - class_name: The CSS class name of the elements to count.
+        - min_count: The minimum number of elements to wait for.
+
+        Returns:
+        - None
+        """
+        current_count = len(self.driver.find_elements(By.CLASS_NAME, class_name))
+        while current_count <= min_count:
+            footer = self.driver.find_element(By.ID, "footer")
+            ActionChains(self.driver).scroll_to_element(footer).perform()
+            self.driver.implicitly_wait(2)
+            current_count = len(self.driver.find_elements(By.CLASS_NAME, class_name))
+
+    def wait_until_class_count_exceeds(
+        self, class_name: str, min_count: int, timeout=5
+    ) -> None:
+        """
+        Wait until the number of elements matching the specified class exceeds a minimum count.
+
+        Args:
+        - class_name: The CSS class name of the elements to count.
+        - min_count: The minimum number of elements to wait for.
+        - timeout: The maximum time to wait for the condition to be met.
+
+        Returns:
+        - None
+        """
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                lambda driver: len(
+                    self.driver.find_elements(By.CSS_SELECTOR, f".{class_name}")
+                )
+                > min_count
+            )
+            # TODO: Explore logging the scraper instead of the class name or associating classes with scraper.
+            self.logger.info(
+                f"Number of elements matching class '{class_name} exceeded {min_count}."
+            )
+        except TimeoutException:
+            try:
+                self.logger.info(
+                    "Number of elements specified not found, scrolling to load them."
+                )
+                self.scroll_to_load_more(class_name, min_count)
+                self.logger.info(
+                    f"Number of elements matching class '{class_name} exceeded {min_count}."
+                )
+            except TimeoutException:
+                self.logger.warning(
+                    f"Timeout occured while waiting for class count to exceed {min_count}."
+                )
+
     @staticmethod
     def get_static_chrome_driver(options):
         """

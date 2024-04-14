@@ -104,6 +104,11 @@ class IOUtils:
             action="store_true",
         )
 
+        scraping_group = parser.add_argument_group("Scraping options")
+        scraping_group.add_argument(
+            "--count", help="Specify the amount of items to scrape", type=int
+        )
+
         args = parser.parse_args()
 
         # Load configuration from YAML file
@@ -223,6 +228,9 @@ class IOUtils:
 
         if args.output_dir:
             config["output_directory"] = args.output_dir
+
+        if args.count:
+            config["count"] = args.count
 
     @staticmethod
     def handle_dataframe_output(dataframes: dict, output_filename: str, config):

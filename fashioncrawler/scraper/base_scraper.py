@@ -282,7 +282,10 @@ class BaseScraper:
                 f"Timeout occured while waiting for class count to exceed {min_count}."
             )
 
-    def wait_for_page_load(self, class_name: str, min_count: int) -> None:
+    def wait_for_page_load(
+        self,
+        class_name: str,
+    ) -> None:
         """
         Wait for the page to load completely.
 
@@ -293,6 +296,7 @@ class BaseScraper:
         Returns:
         - None
         """
+        min_count = self.config["count"]
         self.wait_until_class_count_exceeds(class_name, min_count)
 
     @abstractmethod
