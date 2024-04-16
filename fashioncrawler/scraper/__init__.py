@@ -1,5 +1,5 @@
 """
-Fashion Crawler Package
+Scraper Package
 =======================
 
 This package provides functionality for web scraping fashion-related websites.
