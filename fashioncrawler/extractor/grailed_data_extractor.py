@@ -1,4 +1,13 @@
-from .base_data_extractor import *
+from typing import List
+
+import pandas
+import soupsieve as sv
+from bs4 import BeautifulSoup
+from lxml import etree
+
+from fashioncrawler.utils import Utils
+
+from .base_data_extractor import BaseDataExtractor
 
 
 class GrailedDataExtractor(BaseDataExtractor):

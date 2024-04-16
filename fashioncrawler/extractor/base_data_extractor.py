@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import List
 
 import pandas
 import soupsieve as sv
@@ -7,7 +6,6 @@ from bs4 import BeautifulSoup
 from lxml import etree
 
 from fashioncrawler.utils.logger_config import configure_logger
-from fashioncrawler.utils import Utils
 
 
 class BaseDataExtractor:
