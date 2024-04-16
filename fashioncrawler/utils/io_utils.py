@@ -1,17 +1,28 @@
-# Copyright 2024 Nicholas Brady. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
+"""
+IO Utils Module
+=======================
+
+This module provides utility functions for handling input/output operations and command-line argument parsing.
+
+Copyright 2024 Nicholas Brady. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Classes:
+- IOUtils: A utility class for handling input/output operations and command-line argument parsing.
+
+Methods:
+- parse_args(): Parse command-line arguments and configuration settings.
+- _load_config(config_file): Load configuration settings from a YAML file.
+- _enable_sites(config, site_names): Enable specific sites in the configuration.
+- _disable_sites(config, site_names): Disable specific sites in the configuration.
+- _get_output_format(args): Determine the output format based on command-line arguments.
+- _update_config_with_options(config, args): Update the configuration with command-line options.
+- handle_dataframe_output(dataframes, output_filename, config): Save DataFrames to a file based on the specified output format.
+- _save_as_json(dataframes, filename): Save DataFrames to a JSON file.
+- _save_as_csv(dataframes, filename): Save DataFrames to a CSV file.
+- _save_as_yaml(dataframes, filename): Save DataFrames to a YAML file.
+- _print_out_dataframes(dataframes): Print out the DataFrames.
+"""
 
 import argparse
 import json
