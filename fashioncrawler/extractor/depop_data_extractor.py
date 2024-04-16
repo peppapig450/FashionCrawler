@@ -1,6 +1,14 @@
-from fashioncrawler.scraper.depop_scraper import DepopScraper
+from typing import List
 
-from .base_data_extractor import *
+import pandas
+import soupsieve as sv
+from bs4 import BeautifulSoup
+from lxml import etree
+
+from fashioncrawler.scraper.depop_scraper import DepopScraper
+from fashioncrawler.utils import Utils
+
+from .base_data_extractor import BaseDataExtractor
 
 
 # TODO: Extract the info about how many ppl have it in their bags etc
