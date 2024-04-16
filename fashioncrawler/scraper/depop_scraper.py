@@ -1,4 +1,5 @@
 import threading
+import time
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
 from .base_scraper import *
