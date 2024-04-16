@@ -1,4 +1,52 @@
-from .base_scraper import *
+"""
+Grailed Scraper Module
+======================
+
+This module provides functionality for scraping data from the Grailed website.
+
+Dependencies:
+- sys: Standard library for system-specific parameters and functions.
+- selenium.common.exceptions: Module providing exceptions for the Selenium WebDriver.
+- selenium.webdriver: Module providing classes for accessing web browsers.
+- selenium.webdriver.common.by: Module providing mechanisms for locating elements by various strategies.
+- selenium.webdriver.support: Module providing classes for waiting for conditions before performing actions.
+- selenium.webdriver.support.expected_conditions: Module providing predefined conditions for use with WebDriverWait.
+- selenium.webdriver.support.wait: Module providing WebDriverWait class for waiting until a condition is true or a timeout occurs.
+- .base_scraper: Module providing the BaseScraper class for web scraping.
+
+Classes:
+- GrailedScraper: Subclass of BaseScraper for scraping data from the Grailed website.
+
+Attributes:
+- LOGIN_POPUP_SELECTOR (str): CSS selector for the login popup.
+- SEARCH_BAR_CSS_SELECTOR (str): CSS selector for the search bar.
+- SEARCH_BAR_SUBMIT_CSS_SELECTOR (str): CSS selector for the search bar submit button.
+- COOKIES_CSS_SELECTOR (str): CSS selector for the cookies acceptance button.
+- BASE_URL (str): Base URL of the Grailed website.
+- ITEM_CLASS_NAME (str): CSS class name for identifying items on the page.
+- MIN_COUNT (int): Minimum count of items to wait for during page load.
+
+Methods:
+- __init__(self, config): Initializes the Grailed scraper with the base scraper object.
+- run_scraper(self, search_query) -> None: Runs the Grailed scraper to search for items based on the provided search query.
+- _navigate_and_search(self, search_query: str) -> None: Navigates to the search bar and performs a search based on the provided query.
+- get_to_search_bar_to_search(self, search_bar_css_selector: str, timeout=2) -> None: Navigate to the search bar and interact with it to initiate a search.
+- _dismiss_login_popup(self, timeout: int) -> None: Dismisses the login popup within a specified timeout period.
+"""
+
+import sys
+
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
+from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+from .base_scraper import BaseScraper
 
 
 class GrailedScraper(BaseScraper):

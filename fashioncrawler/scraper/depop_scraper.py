@@ -1,8 +1,106 @@
+"""
+Depop Scraper Module
+====================
+
+This module provides functionality for scraping data from the Depop website.
+
+Dependencies:
+- threading: Standard library for threading.
+- time: Standard library for time-related functions.
+- concurrent.futures: Standard library for concurrency primitives.
+- logging: Standard library for logging.
+- selenium: Library for web automation.
+- webdriver_manager: Library for managing web drivers.
+- fashioncrawler.utils.logger_config: Module for configuring loggers.
+- .base_scraper: Module providing the BaseScraper class for web scraping.
+
+Classes:
+- DepopScraper: Subclass of BaseScraper for scraping data from the Depop website.
+
+Attributes:
+- COOKIE_CSS_SELECTOR (str):
+    CSS selector for the cookies button.
+- SEARCH_ICON_SELECTOR (str):
+    CSS selector for the search icon.
+- SEARCH_BAR_SELECTOR (str):
+    CSS selector for the search bar.
+- SUBMIT_BUTTON_SELECTOR (str):
+    CSS selector for the submit button.
+- BACKUP_SUBMIT_BUTTON_SELECTOR (str):
+    CSS selector for the backup submit button.
+- BASE_URL (str):
+    Base URL of the Depop website.
+- ITEM_CLASS_NAME (str):
+    CSS class name for identifying items on the page.
+- MIN_COUNT (int):
+    Minimum count of items to wait for during page load.
+
+Methods:
+- __init__(self, config):
+    Initializes the Depop scraper with the base scraper object.
+- run_scraper(self, search_query) -> None:
+    Runs the Depop scraper to search for items based on the provided search query.
+- get_to_search_bar_to_search(
+    self,
+    search_bar_css_selector: str,
+    timeout=2
+) -> None:
+    Navigate to the search bar and interact with it to initiate a search.
+- type_search(
+    self,
+    search: str,
+    search_bar_css_selector: str,
+    submit_button_css_selector: str
+) -> None:
+    Enter the provided search query into the search bar and submit the search.
+- _navigate_and_search(self, search_query: str) -> None:
+    Navigates to the search bar and performs a search based on the provided query.
+- get_logger() -> logging.Logger:
+    Retrieves a static logger instance for the static methods in DepopScraper.
+- get_page_sources_concurrently(urls):
+    Fetches page sources concurrently for a list of URLs using ThreadPoolExecutor.
+- _fetch_update_page_source(
+    url: str,
+    page_sources,
+    lock: threading.Lock,
+    options: Options,
+    logger: logging.Logger,
+    max_retries: int,
+    backoff_delay: int
+):
+    Fetches and updates the page source for a given URL.
+
+Exceptions:
+- NoSuchElementException: Raised when an element could not be found.
+- StaleElementReferenceException: Raised when a reference to an element is no longer valid.
+- TimeoutException: Raised when a timeout occurs while waiting for an element or condition.
+- WebDriverException: Base class for WebDriver exceptions.
+- CancelledError: Raised when a concurrent task is canceled.
+"""
+
+import logging
 import threading
 import time
 from concurrent.futures import CancelledError, ThreadPoolExecutor, as_completed
 
-from .base_scraper import *
+from selenium import webdriver
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+    WebDriverException,
+)
+from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+
+import fashioncrawler.utils.logger_config as logger_config
+
+from .base_scraper import BaseScraper
 
 
 class DepopScraper(BaseScraper):

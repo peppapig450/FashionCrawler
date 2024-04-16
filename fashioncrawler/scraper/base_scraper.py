@@ -1,6 +1,42 @@
+"""
+Base Scraper Module
+===================
+
+This module provides a base class with functionality for web scraping using Selenium.
+
+Dependencies:
+- logging: Standard library for logging.
+- sys: Standard library for system-specific parameters and functions.
+- webdriver_manager.chrome: Manages the Chrome WebDriver.
+- selenium: Library for web automation.
+- fashioncrawler.utils.logger_config: Configuration for logging.
+
+Classes:
+- BaseScraper: Base class for implementing web scraping functionality.
+
+Methods:
+- __init__(self, config): Initializes the scraper with the provided configuration.
+- get_chrome_driver(self, config): Initializes and returns a Chrome WebDriver instance with specified options.
+- configure_driver_options(self, config): Configures the options for the Chrome WebDriver.
+- get_logger(self): Retrieves a logger instance for the scraper.
+- accept_cookies(self, cookie_css_selector): Accepts cookies on the website by locating and clicking the corresponding button.
+- get_search_query(): Prompts the user to enter a search query.
+- search_for_query(self, search_query, search_bar_css_selector, submit_button_css_selector): Performs a search with the provided query.
+- type_search(self, search, search_bar_css_selector, submit_button_css_selector): Enters the provided search query into the search bar and submits the search.
+- get_to_search_bar_to_search(self, search_bar_css_selector, timeout=2): Navigates to the search bar and interacts with it to initiate a search.
+- navigate_to_search_bar(self, base_url, search_bar_css_selector): Navigates to the search bar of the website.
+- wait_until_class_count_exceeds(self, class_name, min_count, timeout=5): Waits until the number of elements matching the specified class exceeds a minimum count.
+- wait_for_page_load(self, class_name): Waits for the page to load completely.
+- run_scraper(self, search_query): Abstract method to run the scraper for a given search query.
+
+Exceptions:
+- NoSuchElementException: Raised when an element could not be found.
+- StaleElementReferenceException: Raised when a reference to an element is no longer valid.
+- TimeoutException: Raised when a timeout occurs while waiting for an element or condition.
+"""
+
 import logging
 import sys
-import time
 from abc import abstractmethod
 
 from selenium import webdriver
@@ -8,7 +44,6 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
-    WebDriverException,
 )
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
