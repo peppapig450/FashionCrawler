@@ -1,10 +1,39 @@
+"""
+Utility Functions Module
+=======================
+
+This module provides utility functions for various operations.
+
+Classes:
+- Utils: A class containing utility methods.
+
+Functions:
+- convert_to_datetime(time_str_list): Convert a list of time strings to datetime objects.
+"""
+
 from datetime import datetime, timedelta
 
 
 class Utils:
+    """
+    Utils: A class containing utility methods.
+
+    Methods:
+    - convert_to_datetime(time_str_list): Convert a list of time strings to datetime objects.
+    """
+
     # TODO: optimize this (check testing/testing.py)
     @classmethod
     def convert_to_datetime(cls, time_str_list):
+        """
+        Convert a list of time strings to datetime objects.
+
+        Args:
+            time_str_list (list): A list of time strings.
+
+        Returns:
+            list: A list of formatted datetime strings.
+        """
         datetime_list = []
 
         for time_str in time_str_list:
@@ -14,18 +43,18 @@ class Utils:
 
             if unit in ("days", "day"):
                 delta = timedelta(days=num)
-                format = "%a, %B %d"
+                tformat = "%a, %B %d"
             elif unit in ("hours", "hour"):
                 delta = timedelta(hours=num)
-                format = "%a, %B %d at about %I%p"
+                tformat = "%a, %B %d at about %I%p"
             elif unit in ("minutes", "minute"):
                 delta = timedelta(minutes=num)
-                format = "%a, %B %d at %I:%M%p"
+                tformat = "%a, %B %d at %I:%M%p"
             else:
                 raise ValueError("Invalid unit")
 
             datetime_string = datetime.now() - delta
-            formatted_string = datetime_string.strftime(format)
+            formatted_string = datetime_string.strftime(tformat)
             datetime_list.append(formatted_string)
 
         return datetime_list
