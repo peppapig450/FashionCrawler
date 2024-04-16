@@ -1,3 +1,33 @@
+"""
+Grailed Data Extractor Module
+==============================
+
+This module provides a class for extracting data from Grailed listings.
+
+Dependencies:
+- typing: Type hinting module for defining type hints.
+- pandas: Library for data manipulation and analysis.
+- soupsieve: A CSS selector library for BeautifulSoup.
+- BeautifulSoup: Library for parsing HTML and XML documents.
+- lxml: A Pythonic XML and HTML processing library.
+- fashioncrawler.utils: Utility functions for data conversion and manipulation.
+- .base_data_extractor: BaseDataExtractor class for extracting data from web pages.
+
+Classes:
+- GrailedDataExtractor: Class for extracting data from Grailed listings.
+
+Methods:
+- __init__(driver): Constructor method.
+- get_page_soup(driver): Retrieves BeautifulSoup instance of the current page source.
+- extract_data_to_dataframe(): Extracts data from the page and stores it in a Pandas DataFrame.
+- extract_item_post_times(): Extracts the post times of items from the BeautifulSoup object.
+- extract_item_titles(): Extracts the titles of items from the BeautifulSoup object.
+- extract_item_designers(): Extracts the designers of items from the BeautifulSoup object.
+- extract_item_sizes(): Extracts the sizes of items from the BeautifulSoup object.
+- extract_item_prices(): Extracts the prices of items from the BeautifulSoup object.
+- extract_item_listing_link(): Extracts the listing links of items from the BeautifulSoup object.
+"""
+
 from typing import List
 
 import pandas
@@ -94,7 +124,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return Utils.convert_to_datetime(extracted_item_post_times)
 
-    def extract_item_titles(self):
+    def extract_item_titles(self) -> List[str]:
         """
         Extracts the titles of items from the BeautifulSoup object.
 
@@ -109,7 +139,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return extracted_item_titles
 
-    def extract_item_designers(self):
+    def extract_item_designers(self) -> List[str]:
         """
         Extracts the designers of items from the BeautifulSoup object.
 
@@ -127,7 +157,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return extracted_item_designers
 
-    def extract_item_sizes(self):
+    def extract_item_sizes(self) -> List[str]:
         """
         Extracts the sizes of items from the BeautifulSoup object.
 
@@ -157,7 +187,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return extracted_item_prices
 
-    def extract_item_listing_link(self):
+    def extract_item_listing_link(self) -> List[str]:
         """
         Extracts the listing links of items from the BeautifulSoup object.
 

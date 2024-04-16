@@ -1,3 +1,26 @@
+"""
+Base Data Extractor Module
+==========================
+
+This module provides a base class for extracting data from web pages and storing it in a Pandas DataFrame.
+
+Dependencies:
+- abc: Abstract Base Classes module for defining abstract methods.
+- pandas: Library for data manipulation and analysis.
+- soupsieve: A CSS selector library for BeautifulSoup.
+- BeautifulSoup: Library for parsing HTML and XML documents.
+- lxml: A Pythonic XML and HTML processing library.
+- fashioncrawler.utils.logger_config: Configuration for logging.
+
+Classes:
+- BaseDataExtractor: Base class for extracting data from web pages and storing it in a Pandas DataFrame.
+
+Methods:
+- __init__(self, driver, config): Initializes the BaseDataExtractor with the WebDriver instance and configuration.
+- get_page_soup(self, page_source): Parses the page source and returns a BeautifulSoup object.
+- extract_data_to_dataframe(self, data_extraction_functions): Abstract method to extract data from the web page and store it in a Pandas DataFrame.
+"""
+
 from abc import abstractmethod
 
 import pandas

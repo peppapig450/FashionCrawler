@@ -1,3 +1,38 @@
+"""
+Depop Data Extractor Module
+============================
+
+This module provides a class for extracting data from Depop.
+
+Dependencies:
+- typing: Type hinting module for defining type hints.
+- pandas: Library for data manipulation and analysis.
+- soupsieve: A CSS selector library for BeautifulSoup.
+- BeautifulSoup: Library for parsing HTML and XML documents.
+- lxml: A Pythonic XML and HTML processing library.
+- fashioncrawler.scraper.depop_scraper: DepopScraper class for scraping Depop pages.
+- fashioncrawler.utils: Utility functions for data conversion and manipulation.
+- .base_data_extractor: BaseDataExtractor class for extracting data from web pages.
+
+Classes:
+- DepopDataExtractor: Class for extracting data from Depop.
+
+Methods:
+- __init__(self, config, driver=None): Initializes a DepopDataExtractor object.
+- get_page_soup(self, page_source=None): Gets the BeautifulSoup instance of the current page source.
+- extract_data_to_dataframe(self) -> pandas.DataFrame: Extracts data from item links obtained by `get_item_links` method and returns a DataFrame.
+- get_item_links(self): Retrieves a list of item links from the current page.
+- extract_data_from_item_links(self, links): Extracts data from a list of item links.
+- extract_data(self, page_source, url): Extracts data from a single item page.
+- extract_item_title(self) -> List[str]: Extracts the title of the item.
+- extract_item_price(self) -> List[str]: Extracts the price of the item.
+- extract_item_seller(self) -> List[str]: Extracts the seller of the item.
+- extract_item_description(self): Extracts the description of the item.
+- extract_item_condition(self) -> List[str]: Extracts the condition of the item.
+- extract_item_size(self): Extracts the size of the item.
+- extract_item_time_posted(self): Extracts the time when the item was listed.
+"""
+
 from typing import List
 
 import pandas
