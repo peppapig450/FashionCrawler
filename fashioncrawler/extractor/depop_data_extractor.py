@@ -35,7 +35,7 @@ Methods:
 
 from typing import List
 
-import pandas
+import pandas as pd
 import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -101,7 +101,7 @@ class DepopDataExtractor(BaseDataExtractor):
         else:
             return BeautifulSoup(self.driver.page_source, "lxml", parser=parser)
 
-    def extract_data_to_dataframe(self) -> pandas.DataFrame:
+    def extract_data_to_dataframe(self) -> pd.DataFrame:
         """
         Extracts data from item links obtained by `get_item_links` method and returns a DataFrame.
 
@@ -113,7 +113,7 @@ class DepopDataExtractor(BaseDataExtractor):
         - pandas.DataFrame: Extracted data as a DataFrame.
 
         Example:
-            extractor = DepopandasataExtractor(driver)
+            extractor = DepopDataExtractor(driver)
             dataframe = extractor.extract_data_to_dataframe()
         """
         item_links = self.get_item_links()
@@ -177,7 +177,7 @@ class DepopDataExtractor(BaseDataExtractor):
                 )
 
         self.logger.debug("Extraction from item links completed.")
-        return pandas.DataFrame.from_dict(all_data)
+        return pd.DataFrame.from_dict(all_data)
 
     def extract_data(self, page_source, url):
         """
