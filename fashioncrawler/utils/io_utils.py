@@ -123,7 +123,7 @@ class IOUtils:
         args = parser.parse_args()
 
         # Load configuration from YAML file
-        config = IOUtils._load_config("config/config.yaml")
+        config = IOUtils._load_config("../resources/config/config.yaml")
 
         # update config based on command line args
         if args.enable_site:
@@ -148,6 +148,7 @@ class IOUtils:
         Returns:
             dict: Configuration settings loaded from the file.
         """
+        config_file = os.path.abspath(config_file)
         try:
             with open(config_file, "r", encoding="UTF-8") as f:
                 config = yaml.safe_load(f)
