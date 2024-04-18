@@ -30,7 +30,7 @@ Methods:
 
 from typing import List
 
-import pandas
+import pandas as pd
 import soupsieve as sv
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -99,7 +99,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         for column, func in data_extraction_functions.items():
             extracted_data[column] = func()
 
-        df = pandas.DataFrame.from_dict(extracted_data)
+        df = pd.DataFrame.from_dict(extracted_data)
 
         if len(df) > self.count:
             df = df.head(self.count)
