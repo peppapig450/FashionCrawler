@@ -58,3 +58,18 @@ class Utils:
             datetime_list.append(formatted_string)
 
         return datetime_list
+
+    @staticmethod
+    def create_context_dict(dataframes, **kwargs):
+        """
+        Create a context dictionary for Jinja2 templates by merging the given dataframes and additional key-value pairs.
+
+        Parameters:
+        - dataframes (dict): A dictionary containing dataframes as values.
+        - **kwargs: Additional key-value pairs to include in the context dictionary.
+
+        Returns:
+        dict: A context dictionary containing merged dataframes and additional key-value pairs.
+        """
+        context = {**dataframes, **kwargs}
+        return context
