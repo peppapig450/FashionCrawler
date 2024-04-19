@@ -149,7 +149,6 @@ class IOUtils:
             dict: Configuration settings loaded from the file.
         """
         config_file = os.path.abspath(config_file)
-        print(config_file)
         try:
             with open(config_file, "r", encoding="UTF-8") as f:
                 config = yaml.safe_load(f)
@@ -312,9 +311,8 @@ class IOUtils:
         Returns:
             None
         """
-        for name, df in dataframes.items():
-            output_filename = f"{name}_{filename}.csv"
-            df.to_csv(output_filename, index=False)
+        with open(f"{filename}.csv", "w", encoding="UTF-8") as csv_file:
+            for df in
 
     @staticmethod
     def _save_as_yaml(dataframes: dict, filename: str):
