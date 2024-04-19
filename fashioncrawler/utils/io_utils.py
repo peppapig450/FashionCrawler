@@ -164,7 +164,6 @@ class IOUtils:
             dict: Configuration settings loaded from the file.
         """
         config_file = os.path.abspath(config_file)
-        print(config_file)
         try:
             with open(config_file, "r", encoding="UTF-8") as f:
                 config = yaml.safe_load(f)
