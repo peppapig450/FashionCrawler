@@ -161,6 +161,9 @@ class DepopDataExtractor(BaseDataExtractor):
             "Listing Link": [],
         }
 
+        if hasattr(self, "html"):
+            all_data["Image Link"] = []
+
         page_sources = DepopScraper.get_page_sources_concurrently(links)
 
         for url, source in page_sources.items():
@@ -202,6 +205,9 @@ class DepopDataExtractor(BaseDataExtractor):
             "Posted Time": self.extract_item_time_posted,
             "Listing Link": lambda: url,
         }
+
+        if hasattr(self, "html"):
+            data_extraction_functions["Image Link"] = self.extract_item_image_link
 
         extracted_data = {}
         for column, func in data_extraction_functions.items():
@@ -332,9 +338,27 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         extracted_post_times = list(
             map(
-                lambda time_posted: time_posted.text.replace("Listed", "").strip(),
+                lambda time_posted: time_posted.text.replace(
+                    "Listed", "").strip(),
                 sv.select("time[datetime]", self.soup),
             )
         )
 
         return Utils.convert_to_datetime(extracted_post_times)
+
+    def extract_item_image_link(self) -> List[str | None]:
+        """
+        Extracts the time when the item was listed.
+
+        Returns:
+            List containing the time of when the item was listed.
+        """
+        extracted_image_links = list(
+            map(
+                lambda image_link: image_link.text if image_link else None,
+                sv.select(
+                    "img.styles__StyledImg-sc-83b41153-3.hswtdB[src]", self.soup)
+            )
+        )[:1]
+
+        return extracted_image_links
