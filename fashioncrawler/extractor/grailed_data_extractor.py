@@ -120,8 +120,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         """
         extracted_item_post_times = list(
             map(
-                lambda time: time.text.split(
-                    "\xa0ago")[0].replace("about ", "")
+                lambda time: time.text.split("\xa0ago")[0].replace("about ", "")
                 + " ago",
                 sv.select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
@@ -210,19 +209,18 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return extracted_item_listing_links
 
-    def extract_item_image_links(self) -> List[str]:
+    def extract_item_image_links(self):
         """
         Extracts the cover image links of items from the BeautifulSoup object.
 
         Returns:
         - A list of item cover image links.
         """
-        extracted_item_image_links = list(
-            map(
-                lambda image_link: image_link.text,
-                sv.select(
-                    "div.listing-cover-photo img.Image-module__crop___nWp1j[src]", self.soup)
+        extracted_item_image_links = [
+            image_link["src"]
+            for image_link in sv.select(
+                "img.Image-module__crop___nWp1j[src]", self.soup
             )
-        )
-
+            if "tmp" not in image_link
+        ]
         return extracted_item_image_links

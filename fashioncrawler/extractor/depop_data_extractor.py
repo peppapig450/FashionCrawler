@@ -338,15 +338,14 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         extracted_post_times = list(
             map(
-                lambda time_posted: time_posted.text.replace(
-                    "Listed", "").strip(),
+                lambda time_posted: time_posted.text.replace("Listed", "").strip(),
                 sv.select("time[datetime]", self.soup),
             )
         )
 
         return Utils.convert_to_datetime(extracted_post_times)
 
-    def extract_item_image_link(self) -> List[str | None]:
+    def extract_item_image_link(self):
         """
         Extracts the time when the item was listed.
 
@@ -355,10 +354,11 @@ class DepopDataExtractor(BaseDataExtractor):
         """
         extracted_image_links = list(
             map(
-                lambda image_link: image_link.text if image_link else None,
+                lambda image_link: image_link["src"],
                 sv.select(
-                    "img.styles__StyledImg-sc-83b41153-3.hswtdB[src]", self.soup)
+                    "div.styles__ImageContainer-sc-83b41153-2.dpycJk > img:first-child[loading='eager']",
+                    self.soup,
+                ),
             )
         )[:1]
-
         return extracted_image_links
