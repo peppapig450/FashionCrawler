@@ -1,6 +1,7 @@
-from pprint import pprint
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 from jinja2 import Environment, FileSystemLoader
-from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class RenderAndServe(HTTPServer):
@@ -24,7 +25,10 @@ class RenderAndServe(HTTPServer):
 class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/":
-            rendered_html = self.server.template.render(**self.server.context)  # type: ignore
+            # TODO: figure out how to fix the type
+            rendered_html = self.server.template.render(
+                **self.server.context
+            )
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -50,6 +54,7 @@ def render_and_serve(context, **kwargs):
             f"Server running at http://{server.server_address[0]}:{server.server_address[1]}/"
         )
         server.serve_forever()
+        os.popen(f"open {server.server_address}")
     except KeyboardInterrupt:
         print("^C Received, shutting down server")
         server.server_close()
