@@ -12,3 +12,7 @@ sites:
     enabled: false
 
 count: 30
+
+subtemplates:
+  depop: depop_subtemplate.html.j2
+  grailed: grailed_subtemplate.html.j2
