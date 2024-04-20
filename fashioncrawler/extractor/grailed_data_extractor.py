@@ -25,7 +25,7 @@ Methods:
 - extract_item_designers(): Extracts the designers of items from the BeautifulSoup object.
 - extract_item_sizes(): Extracts the sizes of items from the BeautifulSoup object.
 - extract_item_prices(): Extracts the prices of items from the BeautifulSoup object.
-- extract_item_listing_link(): Extracts the listing links of items from the BeautifulSoup object.
+- extract_item_listing_links(): Extracts the listing links of items from the BeautifulSoup object.
 """
 
 from typing import List
@@ -55,7 +55,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         - extract_item_designers(): Extracts the designers of items from the BeautifulSoup object.
         - extract_item_sizes(): Extracts the sizes of items from the BeautifulSoup object.
         - extract_item_prices(): Extracts the prices of items from the BeautifulSoup object.
-        - extract_item_listing_link(): Extracts the listing links of items from the BeautifulSoup object.
+        - extract_item_listing_links(): Extracts the listing links of items from the BeautifulSoup object.
     """
 
     def __init__(self, config, driver=None):
@@ -92,8 +92,11 @@ class GrailedDataExtractor(BaseDataExtractor):
             "Designer": self.extract_item_designers,
             "Size": self.extract_item_sizes,
             "Posted Time": self.extract_item_post_times,
-            "Listing Link": self.extract_item_listing_link,
+            "Listing Link": self.extract_item_listing_links,
         }
+
+        if hasattr(self, "html"):
+            data_extraction_functions["Image Link"] = self.extract_item_image_links
 
         extracted_data = {}
         for column, func in data_extraction_functions.items():
@@ -117,7 +120,8 @@ class GrailedDataExtractor(BaseDataExtractor):
         """
         extracted_item_post_times = list(
             map(
-                lambda time: time.text.split("\xa0ago")[0].replace("about ", "")
+                lambda time: time.text.split(
+                    "\xa0ago")[0].replace("about ", "")
                 + " ago",
                 sv.select(".ListingAge-module__dateAgo___xmM8y", self.soup),
             )
@@ -187,7 +191,7 @@ class GrailedDataExtractor(BaseDataExtractor):
         )
         return extracted_item_prices
 
-    def extract_item_listing_link(self) -> List[str]:
+    def extract_item_listing_links(self) -> List[str]:
         """
         Extracts the listing links of items from the BeautifulSoup object.
 
@@ -205,3 +209,20 @@ class GrailedDataExtractor(BaseDataExtractor):
             )
         )
         return extracted_item_listing_links
+
+    def extract_item_image_links(self) -> List[str]:
+        """
+        Extracts the cover image links of items from the BeautifulSoup object.
+
+        Returns:
+        - A list of item cover image links.
+        """
+        extracted_item_image_links = list(
+            map(
+                lambda image_link: image_link.text,
+                sv.select(
+                    "div.listing-cover-photo img.Image-module__crop___nWp1j[src]", self.soup)
+            )
+        )
+
+        return extracted_item_image_links
