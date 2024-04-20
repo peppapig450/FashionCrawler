@@ -67,6 +67,15 @@ def main():
                 dataframes[site] = df
                 scraper_cls.driver.quit()
 
+    if config["output_format"] == "html":
+        context = utils.Utils.create_context_dict(
+            dataframes=dataframes,
+            search_query=search_query,
+            sites=enabled_sites,
+            subtemplates=config["subtemplates"],
+        )
+        utils.html_renderer.render_and_serve(context)
+
     output_filename = str(config.get("output", search_query))
     utils.IOUtils.handle_dataframe_output(
         dataframes, config, enabled_sites, search_query, output_filename
