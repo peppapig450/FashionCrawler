@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionCrawler for {{ search_query }} </title>
+</head>
+    <body>
+        <h1> Results for {{ search_query | title }} </h1>
+        {% for site in sites %}
+            {% if subtemplates and site in subtemplates %}
+                <h2 class="site-{{ site }}"> Results for {{ site | capitalize }} </h2>
+                {% include subtemplates[site] %}
+            {% endif %}
+        {% endfor %}
+    </body>
+</html>
