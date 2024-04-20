@@ -220,6 +220,7 @@ class IOUtils:
             )
         )
 
+    # TODO: ability to output multiple formats
     @staticmethod
     def _get_output_format(args) -> List[str]:
         """
@@ -281,6 +282,7 @@ class IOUtils:
         Returns:
             None
         """
+        output_format = config["output_format"]
 
         output_directory = config.get("output_directory", "")
 
@@ -343,6 +345,7 @@ class IOUtils:
                 indent=4,
             )
 
+    # TODO: fix this
     @staticmethod
     def _save_as_csv(dataframes: dict, filename: str):
         """
