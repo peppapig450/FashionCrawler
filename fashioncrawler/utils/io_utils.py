@@ -102,6 +102,9 @@ class IOUtils:
             "-y", "--yaml", help="Output as YAML", action="store_true"
         )
         output_group.add_argument(
+            "--html", help="Output HTMl using jinja2", action="store_true"
+        )
+        output_group.add_argument(
             "-o", "--output", help="Ouput file name (without extension)", type=str
         )
 
@@ -205,6 +208,7 @@ class IOUtils:
             )
         )
 
+    # TODO: ability to output multiple formats
     @staticmethod
     def _get_output_format(args):
         """
@@ -214,7 +218,7 @@ class IOUtils:
             args (Namespace): Parsed command-line arguments.
 
         Returns:
-            str or None: Output format (json, csv, yaml) or None if no format specified.
+            str or None: Output format (json, csv, yaml, html) or None if no format specified.
         """
         if args.json:
             return "json"
@@ -222,6 +226,8 @@ class IOUtils:
             return "csv"
         elif args.yaml:
             return "yaml"
+        elif args.html:
+            return "html"
         else:
             return None
 
@@ -245,7 +251,7 @@ class IOUtils:
             config["count"] = args.count
 
     @staticmethod
-    def handle_dataframe_output(dataframes: dict, output_filename: str, config):
+    def handle_dataframe_output(dataframes: dict, config, output_filename):
         """
         Save DataFrames to a file based on the specified output format.
 
@@ -257,6 +263,7 @@ class IOUtils:
         Returns:
             None
         """
+        output_format = config["output_format"]
 
         output_directory = config.get("output_directory", "")
 
@@ -264,8 +271,6 @@ class IOUtils:
         if output_directory:
             os.makedirs(output_directory, exist_ok=True)
             output_filename = os.path.join(output_directory, output_filename)
-
-        output_format = config["output_format"]
 
         if output_format == "json":
             IOUtils._save_as_json(dataframes, output_filename)
@@ -299,6 +304,7 @@ class IOUtils:
                 indent=4,
             )
 
+    # TODO: fix this
     @staticmethod
     def _save_as_csv(dataframes: dict, filename: str):
         """
@@ -312,7 +318,8 @@ class IOUtils:
             None
         """
         with open(f"{filename}.csv", "w", encoding="UTF-8") as csv_file:
-            for df in
+            for df in dataframes.values():
+                df.to_csv(csv_file, index=False)
 
     @staticmethod
     def _save_as_yaml(dataframes: dict, filename: str):
@@ -344,3 +351,8 @@ class IOUtils:
         """
         for name, df in dataframes.items():
             print(f"{name}\n", df)
+
+    @staticmethod
+    def render_and_serve_html(context, renderer):
+        server = renderer(context)
+        server.serve()
