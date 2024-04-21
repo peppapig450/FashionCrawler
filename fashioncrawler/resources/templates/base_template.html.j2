@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FashionCrawler for {{ search_query }} </title>
+    <link rel="stylesheet" href="style.css" />
 </head>
     <body>
-        <h1> Results for {{ search_query | title }} </h1>
+        <h1 class="centered"> Results for {{ search_query | title }} </h1>
         {% for site in sites %}
             {% if subtemplates and site in subtemplates %}
-                <h2 class="site-{{ site }}"> Results for {{ site | capitalize }} </h2>
-                {% include subtemplates[site] %}
+                <h2 class="site-{{ site }}" class="centered"> Results for {{ site | capitalize }} </h2>
+                {% include subtemplates[site] ignore missing with context %}
             {% endif %}
         {% endfor %}
     </body>
