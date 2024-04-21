@@ -26,13 +26,22 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/":
             # TODO: figure out how to fix the type
-            rendered_html = self.server.template.render(
-                **self.server.context
-            )
+            rendered_html = self.server.template.render(**self.server.context)
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
             self.wfile.write(rendered_html.encode("utf-8"))
+        elif self.path.endswith(".css"):
+            css_file_path = self.server.template_path + "/" + self.path[1:]
+            if os.path.exists(css_file_path):
+                with open(css_file_path, "rb") as file:
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/css")
+                    self.end_headers()
+                    self.wfile.write(file.read())
+
+            else:
+                self.send_error(404, "File not found")
         else:
             self.send_error(404, "File not found")
 
