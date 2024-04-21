@@ -1,1 +1,15 @@
-<p>Hello there from {{ site }} </p>
+{% for index, row in grailed.iterrows() %}
+    <div class="grailed-data-box" class="centered">
+        <div class="grailed-item-image-box">
+            <img class="item-image" src="{{ row['Image Link'] }}" alt="Item Image" >
+        </div>
+        <div class="grailed-item-details-box">
+            <p id="item-title"><strong>Name: </strong>{{ row['Title'] }}</p>
+            <p id="item-price"><strong>Price: </strong>{{ row['Price'] }}</p>
+            <p id="item-designer"><strong>Designer: </strong>{{ row['Designer'] }}</p>
+            <p id="item-size"><strong>Size: </strong>{{ row['Size'] }}</p>
+            <p id="item-posted-time"><strong>Posted Time: </strong>{{ row['Posted Time'] }}</p>
+            <p id="item-listing-link"><strong>Listing Link: </strong><a href="{{ row['Listing Link'] }}">{{ row['Listing Link'] }}</a></p>
+        </div>
+    </div>
+{% endfor %}
