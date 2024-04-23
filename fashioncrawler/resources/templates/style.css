@@ -14,14 +14,14 @@ h1.centered::after {
     background-color: black;
 }
 
-div.grailed-data-box {
+div.data-box {
     border: 1px solid black;
     padding: 10px;
     margin-bottom: 20px;
     overflow: hidden;
 }
 
-div.grailed-item-image-box {
+div.item-image-box {
     max-width: 400px;
     max-height: 400px;
     margin-right: 10px;
@@ -36,7 +36,7 @@ img.item-image {
     margin-bottom: 10px;
 }
 
-div.grailed-item-details-box {
+div.item-details-box {
     overflow: hidden;
     margin-left: 200px;
 }
