@@ -1,1 +1,18 @@
-<p>Hello there from {{ site }} </p>
+{% for index, row in depop.iterrows() %}
+    <div class="data-box" class="centered">
+        <div class="item-image-box">
+            <img class="item-image" src="{{ row['Image Link'] }}" alt="Item Image">
+        </div>
+        {# maybe use the dataframe colummn names here instead of typing them #}
+        <div class="item-details-box">
+            <p id="item-title"><strong>Title: </strong>{{ row['Title'] }}</p>
+            <p id="item-price"><strong>Price: </strong>{{ row['Price'] }}</p>
+            <p id="item-seller"><strong>Seller: </strong>{{ row['Seller'] }}</p>
+            <p id="item-size"><strong>Size: </strong>{{ row['Size'] }}</p>
+            <p id="item-condition"><strong>Condition: </strong>{{ row['Condition'] }}</p>
+            <p id="item-description"><strong>Description: </strong>{{ row['Description'] }}</p>
+            <p id="item-posted-time"><strong>Posted Time: </strong>{{ row['Posted Time'] }}</p>
+            <p id="item-listing-link"><strong>Listing Link: </strong><a href="{{ row['Listing Link'] }}">{{ row['Listing Link'] }}</a></p>
+        </div>
+    </div>
+{% endfor %}
