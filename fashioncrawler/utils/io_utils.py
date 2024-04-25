@@ -87,6 +87,8 @@ class IOUtils:
             "-s", "--search", help="Search query to scrape for", type=str
         )
 
+        # TODO: multiple output options
+
         # Output options group
         output_group = parser.add_argument_group(
             "Output options",
@@ -104,11 +106,18 @@ class IOUtils:
         output_group.add_argument(
             "--html", help="Output HTMl using jinja2", action="store_true"
         )
+        output_group.add_argument("--pdf", help="Output a PDF", action="store_true")
         output_group.add_argument(
             "-o", "--output", help="Ouput file name (without extension)", type=str
         )
-
         output_group.add_argument("--output-dir", help="Output directory", type=str)
+
+        output_group.add_argument(
+            "--output-format",
+            nargs="+",
+            choices=["json", "csv" "yaml", "html", "pdf", "print"],
+            help="List of desired output formats (--output-format jsv csv)",
+        )
 
         # Driver options
         driver_group = parser.add_argument_group("Driver options")
@@ -220,16 +229,23 @@ class IOUtils:
         Returns:
             str or None: Output format (json, csv, yaml, html) or None if no format specified.
         """
-        if args.json:
-            return "json"
-        elif args.csv:
-            return "csv"
-        elif args.yaml:
-            return "yaml"
-        elif args.html:
-            return "html"
+        formats = []
+        if args.output_formats:
+            formats = args.output_formats
         else:
-            return None
+            if args.json:
+                formats.append("json")
+            if args.csv:
+                formats.append("csv")
+            if args.yaml:
+                formats.append("yaml")
+            if args.html:
+                formats.append("html")
+            if args.pdf:
+                formats.append("pdf")
+            else:
+                formats.append("print")
+        return formats if formats else None
 
     # TODO: support for multiple output formats use append in argparse and add to list with dictionary
     @staticmethod
@@ -242,7 +258,7 @@ class IOUtils:
             args (Namespace): Parsed command-line arguments.
         """
         config["search_query"] = args.search
-        config["output_format"] = IOUtils._get_output_format(args)
+        config["output_formats"] = IOUtils._get_output_format(args)
         config["headless"] = args.headless
 
         if args.output_dir:
