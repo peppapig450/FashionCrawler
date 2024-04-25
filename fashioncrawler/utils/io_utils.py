@@ -92,6 +92,8 @@ class IOUtils:
             "-s", "--search", help="Search query to scrape for", type=str
         )
 
+        # TODO: multiple output options
+
         # Output options group
         output_group = parser.add_argument_group(
             "Output options",
