@@ -231,6 +231,7 @@ class IOUtils:
         else:
             return None
 
+    # TODO: support for multiple output formats use append in argparse and add to list with dictionary
     @staticmethod
     def _update_config_with_options(config, args):
         """
