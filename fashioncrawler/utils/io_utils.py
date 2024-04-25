@@ -248,6 +248,7 @@ class IOUtils:
                 formats.append("pdf")
         return formats if formats else ["print"]
 
+    # TODO: support for multiple output formats use append in argparse and add to list with dictionary
     @staticmethod
     def _update_config_with_options(config, args):
         """
