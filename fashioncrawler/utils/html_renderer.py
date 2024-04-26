@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from jinja2 import Environment, FileSystemLoader
 
 
+# TODO: Render html in io_utils and then serve it here.
 class RenderAndServe(HTTPServer):
     def __init__(
         self,
