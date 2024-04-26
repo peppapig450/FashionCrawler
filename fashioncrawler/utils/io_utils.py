@@ -30,6 +30,8 @@ import os
 
 import yaml
 
+from jinja2 import Environment, FileSystemLoader
+
 
 class IOUtils:
     """
@@ -115,7 +117,7 @@ class IOUtils:
         output_group.add_argument(
             "--output-format",
             nargs="+",
-            choices=["json", "csv" "yaml", "html", "pdf", "print"],
+            choices=["json", "csv", "yaml", "html", "pdf", "print"],
             help="List of desired output formats (--output-format jsv csv)",
         )
 
@@ -227,7 +229,7 @@ class IOUtils:
             args (Namespace): Parsed command-line arguments.
 
         Returns:
-            str or None: Output format (json, csv, yaml, html) or None if no format specified.
+            formats (list) or None: Output formats (json, csv, yaml, html, pdf or print)
         """
         formats = []
         if args.output_formats:
@@ -245,6 +247,7 @@ class IOUtils:
                 formats.append("pdf")
             else:
                 formats.append("print")
+
         return formats if formats else None
 
     # TODO: support for multiple output formats use append in argparse and add to list with dictionary
@@ -280,7 +283,6 @@ class IOUtils:
         Returns:
             None
         """
-        output_format = config["output_format"]
 
         output_directory = config.get("output_directory", "")
 
@@ -289,14 +291,12 @@ class IOUtils:
             os.makedirs(output_directory, exist_ok=True)
             output_filename = os.path.join(output_directory, output_filename)
 
-        if output_format == "json":
-            IOUtils._save_as_json(dataframes, output_filename)
-        elif output_format == "csv":
-            IOUtils._save_as_csv(dataframes, output_filename)
-        elif output_format == "yaml":
-            IOUtils._save_as_yaml(dataframes, output_filename)
-        else:
-            IOUtils._print_out_dataframes(dataframes)
+        format_handlers = {
+            "json": IOUtils._save_as_json,
+            "csv": IOUtils._save_as_csv,
+            "yaml": IOUtils._save_as_yaml,
+            "print": IOUtils._print_out_dataframes,
+        }
 
     @staticmethod
     def _save_as_json(dataframes: dict, filename: str):
@@ -368,6 +368,16 @@ class IOUtils:
         """
         for name, df in dataframes.items():
             print(f"{name}\n", df)
+
+    @staticmethod
+    def render_and_html(context):
+        template_path = "fashioncrawler/resources/templates"
+        template_name = "base_template.html.j2"
+        env = Environment(loader=FileSystemLoader(template_path))
+        template = env.get_template(template_name)
+        rendered_html = template.render(context)
+
+        return rendered_html
 
     @staticmethod
     def render_and_serve_html(context, renderer):
