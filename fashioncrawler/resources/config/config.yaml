@@ -1,5 +1,6 @@
 output_formats:
-  - json
+  - "json"
+
 output_directory: "output"
 
 sites:
