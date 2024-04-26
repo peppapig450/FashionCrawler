@@ -95,7 +95,9 @@ class GrailedDataExtractor(BaseDataExtractor):
             "Listing Link": self.extract_item_listing_links,
         }
 
-        if hasattr(self, "html"):
+        print
+        if hasattr(self, "get_image_links"):
+            print("Get image links")
             data_extraction_functions["Image Link"] = self.extract_item_image_links
 
         extracted_data = {}

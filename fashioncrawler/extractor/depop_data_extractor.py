@@ -206,7 +206,7 @@ class DepopDataExtractor(BaseDataExtractor):
             "Listing Link": lambda: url,
         }
 
-        if hasattr(self, "html"):
+        if hasattr(self, "get_image_links"):
             data_extraction_functions["Image Link"] = self.extract_item_image_link
 
         extracted_data = {}
