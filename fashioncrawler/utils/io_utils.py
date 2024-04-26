@@ -4,7 +4,7 @@ IO Utils Module
 
 This module provides utility functions for handling input/output operations and command-line argument parsing.
 
-Copyright 2024 Nicholas Brady. All Rights Reserved.
+Copyright 2024 Nick. All Rights Reserved.
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
 Classes:
@@ -32,6 +32,7 @@ from typing import List
 import yaml
 
 from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML
 
 
 class IOUtils:
@@ -290,6 +291,7 @@ class IOUtils:
             "csv": IOUtils._save_as_csv,
             "yaml": IOUtils._save_as_yaml,
             "print": IOUtils._print_out_dataframes,
+            "pdf": IOUtils._save_as_pdf,
         }
 
         for output_format in config["output_formats"]:
@@ -376,6 +378,13 @@ class IOUtils:
         rendered_html = template.render(context)
 
         return rendered_html
+
+    @staticmethod
+    def _save_as_pdf(context, filename):
+        html_out = IOUtils.render_html(context)
+        pdf = HTML(string=html_out, encoding="utf-8").write_pdf()
+        with open(f"{filename}.pdf", "wb", encoding="utf-8") as pdf_file:
+            pdf_file.write(pdf)
 
     @staticmethod
     def render_and_serve_html(context, renderer):
