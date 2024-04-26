@@ -27,6 +27,7 @@ Methods:
 import argparse
 import json
 import os
+from typing import List
 
 import yaml
 
@@ -115,7 +116,7 @@ class IOUtils:
         output_group.add_argument("--output-dir", help="Output directory", type=str)
 
         output_group.add_argument(
-            "--output-format",
+            "--output-formats",
             nargs="+",
             choices=["json", "csv", "yaml", "html", "pdf", "print"],
             help="List of desired output formats (--output-format jsv csv)",
@@ -221,7 +222,7 @@ class IOUtils:
 
     # TODO: ability to output multiple formats
     @staticmethod
-    def _get_output_format(args):
+    def _get_output_format(args) -> List[str]:
         """
         Determine the output format based on command-line arguments.
 
@@ -233,7 +234,7 @@ class IOUtils:
         """
         formats = []
         if args.output_formats:
-            formats = args.output_formats
+            formats.extend(args.output_formats)
         else:
             if args.json:
                 formats.append("json")
@@ -245,10 +246,7 @@ class IOUtils:
                 formats.append("html")
             if args.pdf:
                 formats.append("pdf")
-            else:
-                formats.append("print")
-
-        return formats if formats else None
+        return formats if formats else ["print"]
 
     # TODO: support for multiple output formats use append in argparse and add to list with dictionary
     @staticmethod
@@ -261,7 +259,7 @@ class IOUtils:
             args (Namespace): Parsed command-line arguments.
         """
         config["search_query"] = args.search
-        config["output_formats"] = IOUtils._get_output_format(args)
+        config["output_formats"] = list(set(IOUtils._get_output_format(args)))
         config["headless"] = args.headless
 
         if args.output_dir:
@@ -297,6 +295,9 @@ class IOUtils:
             "yaml": IOUtils._save_as_yaml,
             "print": IOUtils._print_out_dataframes,
         }
+
+        for output_format in config["output_formats"]:
+            format_handlers[output_format](dataframes, output_filename)
 
     @staticmethod
     def _save_as_json(dataframes: dict, filename: str):
@@ -336,7 +337,8 @@ class IOUtils:
         """
         with open(f"{filename}.csv", "w", encoding="UTF-8") as csv_file:
             for df in dataframes.values():
-                df.to_csv(csv_file, index=False)
+                if df is not None:
+                    df.to_csv(csv_file, index=False)
 
     @staticmethod
     def _save_as_yaml(dataframes: dict, filename: str):

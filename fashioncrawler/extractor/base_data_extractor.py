@@ -52,7 +52,7 @@ class BaseDataExtractor:
         self.logger = configure_logger()
         self.config = config
 
-        if self.config["output_format"] == "html":
+        if "html" in self.config["output_formats"]:
             self.html = True
 
     def get_page_soup(self, page_source):
