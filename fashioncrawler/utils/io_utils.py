@@ -92,8 +92,6 @@ class IOUtils:
             "-s", "--search", help="Search query to scrape for", type=str
         )
 
-        # TODO: multiple output options
-
         # Output options group
         output_group = parser.add_argument_group(
             "Output options",
@@ -222,7 +220,6 @@ class IOUtils:
             )
         )
 
-    # TODO: ability to output multiple formats
     @staticmethod
     def _get_output_format(args) -> List[str]:
         """
@@ -250,7 +247,6 @@ class IOUtils:
                 formats.append("pdf")
         return formats if formats else ["print"]
 
-    # TODO: support for multiple output formats use append in argparse and add to list with dictionary
     @staticmethod
     def _update_config_with_options(config, args):
         """
@@ -347,7 +343,6 @@ class IOUtils:
                 indent=4,
             )
 
-    # TODO: fix this
     @staticmethod
     def _save_as_csv(dataframes: dict, filename: str):
         """
