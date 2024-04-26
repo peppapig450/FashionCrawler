@@ -67,7 +67,6 @@ def main():
                 dataframes[site] = df
                 scraper_cls.driver.quit()
 
-    print(config)
     if "html" in config["output_formats"]:
         context = utils.Utils.create_context_dict(
             dataframes=dataframes,
