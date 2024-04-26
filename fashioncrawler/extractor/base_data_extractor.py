@@ -52,8 +52,8 @@ class BaseDataExtractor:
         self.logger = configure_logger()
         self.config = config
 
-        if "html" in self.config["output_formats"]:
-            self.html = True
+        if any(format in self.config["output_formats"] for format in ("html", "pdf")):
+            self.get_image_links = True
 
     def get_page_soup(self, page_source):
         """
