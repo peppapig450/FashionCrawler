@@ -6,3 +6,4 @@
 - [ ] Multiple output formats
 - [ ] choose to save html to file or display it on server.
 - [ ] Create issues for these todo items
+- [ ] XML output
