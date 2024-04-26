@@ -35,6 +35,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
 
+# TODO: Explore class methods for using filename and context
 class IOUtils:
     """
     A utility class for handling input/output operations and command-line argument parsing.
@@ -265,8 +266,10 @@ class IOUtils:
         if args.count:
             config["count"] = args.count
 
-    @staticmethod
-    def handle_dataframe_output(dataframes: dict, config, output_filename):
+    @classmethod
+    def handle_dataframe_output(
+        cls, dataframes: dict, config, enabled_sites, search_query, output_filename
+    ):
         """
         Save DataFrames to a file based on the specified output format.
 
@@ -292,10 +295,29 @@ class IOUtils:
             "yaml": IOUtils._save_as_yaml,
             "print": IOUtils._print_out_dataframes,
             "pdf": IOUtils._save_as_pdf,
+            "html": IOUtils.render_and_serve_html,
         }
 
         for output_format in config["output_formats"]:
-            format_handlers[output_format](dataframes, output_filename)
+            if output_format in ("html", "pdf"):
+                # TODO: MAYBE: seperate this into another function
+                from .utils import Utils
+                from .html_renderer import render_and_serve
+
+                context = Utils.create_context_dict(
+                    dataframes=dataframes,
+                    search_query=search_query,
+                    sites=enabled_sites,
+                    subtemplates=config["subtemplates"],
+                    output_format=output_format,
+                )
+                if output_format == "pdf":
+                    format_handlers[output_format](context, output_filename)
+                else:
+                    format_handlers[output_format](context, render_and_serve)
+
+            else:
+                format_handlers[output_format](dataframes, output_filename)
 
     @staticmethod
     def _save_as_json(dataframes: dict, filename: str):
@@ -369,22 +391,26 @@ class IOUtils:
             print(f"{name}\n", df)
 
     # TODO: pdf and html
-    @staticmethod
-    def render_html(context):
-        template_path = "fashioncrawler/resources/templates"
+    @classmethod
+    def render_html(cls, context):
+        cls.template_path = "fashioncrawler/resources/templates"
         template_name = "base_template.html.j2"
-        env = Environment(loader=FileSystemLoader(template_path))
+        env = Environment(loader=FileSystemLoader(cls.template_path))
         template = env.get_template(template_name)
         rendered_html = template.render(context)
 
-        return rendered_html
+        with open("output/output.html", "w", encoding="utf-8") as html_file:
+            html_file.write(rendered_html)
 
-    @staticmethod
-    def _save_as_pdf(context, filename):
+        return rendered_html.encode("utf-8")
+
+    @classmethod
+    def _save_as_pdf(cls, context, filename):
         html_out = IOUtils.render_html(context)
-        pdf = HTML(string=html_out, encoding="utf-8").write_pdf()
-        with open(f"{filename}.pdf", "wb", encoding="utf-8") as pdf_file:
-            pdf_file.write(pdf)
+        css_file = cls.template_path + "/style.css"
+        HTML(string=html_out, encoding="utf-8").write_pdf(
+            f"{filename}.pdf", stylesheets=[css_file]
+        )
 
     @staticmethod
     def render_and_serve_html(context, renderer):
