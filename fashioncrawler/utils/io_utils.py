@@ -285,7 +285,6 @@ class IOUtils:
         Returns:
             None
         """
-        output_format = config["output_format"]
 
         output_directory = config.get("output_directory", "")
 
