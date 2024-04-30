@@ -1,4 +1,5 @@
 import os
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from jinja2 import Environment, FileSystemLoader
@@ -59,12 +60,4 @@ def render_and_serve(context, **kwargs):
         server_address (tuple, optional): The address for the HTTP server. Defaults to ("localhost", 8000).
     """
     server = RenderAndServe(context, **kwargs)
-    try:
-        print(
-            f"Server running at http://{server.server_address[0]}:{server.server_address[1]}/"
-        )
-        server.serve_forever()
-        os.popen(f"open {server.server_address}")
-    except KeyboardInterrupt:
-        print("^C Received, shutting down server")
-        server.server_close()
+    return server
