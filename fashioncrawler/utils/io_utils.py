@@ -28,13 +28,12 @@ import argparse
 import json
 import os
 import time
+from threading import Thread
 from typing import List
 
 import yaml
-
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-from threading import Thread
 
 
 # TODO: Explore class methods for using filename and context
@@ -303,8 +302,8 @@ class IOUtils:
         for output_format in config["output_formats"]:
             if output_format in ("html", "pdf"):
                 # TODO: MAYBE: seperate this into another function
-                from .utils import Utils
                 from .html_renderer import render_and_serve
+                from .utils import Utils
 
                 context = Utils.create_context_dict(
                     dataframes=dataframes,
@@ -391,20 +390,6 @@ class IOUtils:
         """
         for name, df in dataframes.items():
             print(f"{name}\n", df)
-
-    # TODO: pdf and html
-    @classmethod
-    def render_html(cls, context):
-        cls.template_path = "fashioncrawler/resources/templates"
-        template_name = "base_template.html.j2"
-        env = Environment(loader=FileSystemLoader(cls.template_path))
-        template = env.get_template(template_name)
-        rendered_html = template.render(context)
-
-        with open("output/output.html", "w", encoding="utf-8") as html_file:
-            html_file.write(rendered_html)
-
-        return rendered_html.encode("utf-8")
 
     @classmethod
     def _save_as_pdf(cls, context, filename):
