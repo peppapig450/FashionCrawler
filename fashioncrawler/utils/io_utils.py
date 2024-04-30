@@ -27,12 +27,14 @@ Methods:
 import argparse
 import json
 import os
+import time
 from typing import List
 
 import yaml
 
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
+from threading import Thread
 
 
 # TODO: Explore class methods for using filename and context
@@ -406,13 +408,31 @@ class IOUtils:
 
     @classmethod
     def _save_as_pdf(cls, context, filename):
-        html_out = IOUtils.render_html(context)
-        css_file = cls.template_path + "/style.css"
-        HTML(string=html_out, encoding="utf-8").write_pdf(
-            f"{filename}.pdf", stylesheets=[css_file]
+        from .html_renderer import render_and_serve
+
+        server = render_and_serve(context)
+        server_thread = Thread(target=server.serve_forever)
+        server_thread.daemon = (
+            True  # Allow the program to exit when main thread finishes
         )
+        server_thread.start()
+
+        time.sleep(2)
+
+        try:
+            url = f"http://{server.server_address[0]}:{server.server_address[1]}"
+            HTML(url=url).write_pdf(f"{filename}.pdf")
+        finally:
+            server.shutdown()
 
     @staticmethod
     def render_and_serve_html(context, renderer):
-        server = renderer(context)
-        server.serve()
+        try:
+            server = renderer(context)
+            print(
+                f"Server running at http://{server.server_address[0]}:{server.server_address[1]}/"
+            )
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("^C Received, shutting down server")
+            server.server_close()
