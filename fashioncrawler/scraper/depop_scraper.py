@@ -90,7 +90,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     WebDriverException,
 )
-from selenium.webdriver import ActionChains
+from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -166,7 +166,7 @@ class DepopScraper(BaseScraper):
     SEARCH_ICON_SELECTOR = "button.ButtonMinimal-sc-6a6e37b5-0.SearchBar-styles__SearchButton-sc-ac2d78a2-8.gFYYaH.dUAcFR"
     SEARCH_BAR_SELECTOR = "#searchBar__input"
     SUBMIT_BUTTON_SELECTOR = (
-        "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.gOIiyI"
+        "button.SearchBar-styles__SubmitButton-sc-be4e0a78-6.hUfokA"
     )
     BACKUP_SUBMIT_BUTTON_SELECTOR = (
         "button.SearchBar-styles__SubmitButton-sc-ac2d78a2-6.knZqMC"
@@ -259,6 +259,8 @@ class DepopScraper(BaseScraper):
                 )
             )
             submit_button.click()
+            ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
+
         except TimeoutException:
             try:
                 submit_button = WebDriverWait(self.driver, 2).until(
@@ -275,6 +277,7 @@ class DepopScraper(BaseScraper):
     def _sort_by_newest(self, current_url: str):
         new_url = current_url + "&sort=newlyListed"
         self.driver.get(new_url)
+        # TODO: handle 403 error
 
     def scroll_to_load_more(self, class_name: str, min_count: int) -> None:
         """
