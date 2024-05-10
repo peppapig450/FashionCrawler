@@ -316,7 +316,8 @@ class IOUtils:
                     format_handlers[output_format](context, output_filename)
                 else:
                     format_handlers[output_format](context, render_and_serve)
-
+            elif output_format == "print":
+                format_handlers[output_format](dataframes)
             else:
                 format_handlers[output_format](dataframes, output_filename)
 
