@@ -32,8 +32,7 @@ from threading import Thread
 from typing import List
 
 import yaml
-from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+from weasyprint import HTML, CSS
 
 
 # TODO: Explore class methods for using filename and context
@@ -403,11 +402,16 @@ class IOUtils:
         )
         server_thread.start()
 
-        time.sleep(2)
+        time.sleep(5)
+        css_file_path = "fashioncrawler/resources/templates/style.css"
+        with open(css_file_path) as f:
+            css_content = f.read()
 
         try:
             url = f"http://{server.server_address[0]}:{server.server_address[1]}"
-            HTML(url=url).write_pdf(f"{filename}.pdf")
+            HTML(url=url).write_pdf(
+                f"{filename}.pdf", stylesheets=[CSS(string=css_content)]
+            )
         finally:
             server.shutdown()
 
